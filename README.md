@@ -4,6 +4,10 @@
 
 这是一个可直接编译的中文 A4 双面书籍母版。它把封面、目录、正文、材料栏、侧边图像、引文、表格和数学公式放在同一套网格里；`chapters/sample.tex` 使用章、课层级展示页面接口，这只是校样示例，正式项目可以改成部分、章、节或其他层级。
 
+![实际编译结果：封面、目录、课页和材料页](assets/preview-spread.png)
+
+上图直接来自当前 `main.tex` 的 PDF 渲染，展示的是成品页面，不是示意图。
+
 ## 快速开始
 
 在仓库根目录执行：
@@ -42,6 +46,8 @@ template-preview.pdf           最近一次人工校样
 - 正文：中文小四，1.20 倍行距，首行缩进 2em，双面内外侧边距由 `geometry` 统一管理。
 
 ## 栏目接口
+
+问题栏目默认使用具有轮廓特征的 `head-question-outline`。需要按语境替换时，`preamble.tex` 还提供 `\mdiChatQuestion`、`\mdiLightbulbQuestion`、`\mdiFileQuestion`、`\mdiTableQuestion`、`\mdiBeakerQuestion`、`\mdiFolderQuestion`、`\mdiCommentQuestion` 和 `\mdiMessageQuestion`。
 
 ### 小引文
 
@@ -85,6 +91,10 @@ template-preview.pdf           最近一次人工校样
 ## 字体与许可
 
 在 Tectonic 和 GitHub Actions 的 TeX Live 环境中，中文正文使用 CTeX Fandol 字体集：`FandolSong-Regular`、`FandolSong-Bold`、`FandolKai-Regular` 和 `FandolHei`。Windows MiKTeX 若未安装 Fandol，会按其系统字体集选择 SimSun；这只影响本地替代字体，不改变版心和字号规则。拉丁正文是 Latin Modern Roman，数学使用 Computer Modern 数学字形。栏目图标使用 `fonts/materialdesignicons-webfont.ttf`，归属和 Apache License 2.0 说明见 `fonts/README.md` 与 `licenses/`。
+
+## 页面细节预览
+
+![材料页实际编译结果](assets/preview-material-page.png)
 
 ## 自动构建
 

@@ -13,6 +13,7 @@
 - `fonts/`：随稿件分发的 Material Design Icons 字体；许可说明在 `licenses/`。
 - `.github/workflows/build.yml`：GitHub Actions 的 XeLaTeX 构建和 PDF artifact 上传。
 - `template-preview.pdf`：最近一次人工校样的可视预览，可以提交；编译中间文件不能提交。
+- `assets/preview-spread.png` 和 `assets/preview-material-page.png`：从最近一次 PDF 直接渲染的 README 展示图，更新预览时同步替换。
 
 ## 字体
 

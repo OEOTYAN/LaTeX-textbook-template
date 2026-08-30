@@ -55,15 +55,26 @@
 \definecolor{bookgreen}{HTML}{5D9C74}
 \definecolor{bookviolet}{HTML}{8064A2}
 
-% 图标与栏目字保持同一光学高度，基线略下移以对齐汉字的中线。
-\newcommand{\mdiGlyph}[3][12]{%
-  \raisebox{-0.30ex}{%
+% 图标采用零高度占位，字号和光学偏移可以按字面单独校准，不改变标题行高。
+\newcommand{\mdiGlyphAt}[4]{%
+  \raisebox{#4}[0pt][0pt]{%
     {\MaterialDesignIcons\fontsize{#1}{#1}\selectfont\color{#2}\char"#3}%
   }%
 }
+\newcommand{\mdiGlyph}[3][12]{\mdiGlyphAt{#1}{#2}{#3}{-0.14ex}}
 \DeclareRobustCommand{\mdiBook}{\mdiGlyph[12]{bookblue}{F15D6}}
 \DeclareRobustCommand{\mdiDocument}{\mdiGlyph[12]{bookgreen}{F09EE}}
-\DeclareRobustCommand{\mdiQuestion}{\mdiGlyph[12]{bookorange}{F0625}}
+% 问题图标默认使用头像轮廓；头像、聊天气泡和灯泡按字面分别校准。
+\DeclareRobustCommand{\mdiQuestion}{\mdiGlyphAt{14.5}{bookorange}{F134B}{-0.42ex}}
+\DeclareRobustCommand{\mdiHeadQuestion}{\mdiGlyphAt{14.5}{bookorange}{F134B}{-0.42ex}}
+\DeclareRobustCommand{\mdiChatQuestion}{\mdiGlyphAt{14.5}{bookblue}{F1739}{-0.14ex}}
+\DeclareRobustCommand{\mdiLightbulbQuestion}{\mdiGlyphAt{14.5}{bookorange}{F19E4}{-0.12ex}}
+\DeclareRobustCommand{\mdiFileQuestion}{\mdiGlyphAt{13}{bookgreen}{F1036}{-0.10ex}}
+\DeclareRobustCommand{\mdiTableQuestion}{\mdiGlyphAt{13}{bookgreen}{F1B21}{-0.08ex}}
+\DeclareRobustCommand{\mdiBeakerQuestion}{\mdiGlyphAt{13}{bookviolet}{F1232}{-0.08ex}}
+\DeclareRobustCommand{\mdiFolderQuestion}{\mdiGlyphAt{13}{bookblue}{F19CA}{-0.08ex}}
+\DeclareRobustCommand{\mdiCommentQuestion}{\mdiGlyphAt{13}{bookblue}{F0186}{-0.06ex}}
+\DeclareRobustCommand{\mdiMessageQuestion}{\mdiGlyphAt{13}{bookblue}{F173B}{-0.06ex}}
 \DeclareRobustCommand{\mdiInfo}{\mdiGlyph[12]{bookviolet}{F02FD}}
 \DeclareRobustCommand{\mdiQuote}{\mdiGlyph[12]{bookorange}{F1022}}
 \DeclareRobustCommand{\mdiLink}{\mdiGlyph[11]{bookblue}{F0339}}
