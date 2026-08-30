@@ -9,6 +9,24 @@ $ErrorActionPreference = 'Stop'
 $ProjectRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 $BuildRoot = Join-Path $ProjectRoot $OutputDirectory
 
+# 字体由模板随稿分发；缺文件时直接失败，避免引擎回退到系统字体。
+$RequiredFonts = @(
+  'fonts\NotoSerifSC-Regular.otf',
+  'fonts\NotoSerifSC-Bold.otf',
+  'fonts\NotoSansCJKsc-Regular.otf',
+  'fonts\NotoSansCJKsc-Bold.otf',
+  'fonts\NotoSansMonoCJKsc-Regular.otf',
+  'fonts\NotoSansMonoCJKsc-Bold.otf',
+  'fonts\STIXTwoMath-Regular.otf',
+  'fonts\materialdesignicons-webfont.ttf'
+)
+foreach ($Font in $RequiredFonts) {
+  $FontPath = Join-Path $ProjectRoot $Font
+  if (-not (Test-Path -LiteralPath $FontPath -PathType Leaf)) {
+    throw "缺少随稿字体文件：$Font"
+  }
+}
+
 New-Item -ItemType Directory -Force -Path $BuildRoot | Out-Null
 Push-Location $ProjectRoot
 try {

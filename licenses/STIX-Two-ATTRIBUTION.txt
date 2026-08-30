@@ -1,0 +1,22 @@
+STIX Two Math attribution
+=========================
+
+File distributed in fonts/:
+  STIXTwoMath-Regular.otf
+
+Upstream project:
+  https://github.com/stipub/stixfonts
+
+Release:
+  v2.13b171, static_otf/STIXTwoMath-Regular.otf
+
+Copyright notice embedded in the font file:
+  Copyright 2001-2021 The STIX Fonts Project Authors.
+
+License:
+  SIL Open Font License, Version 1.1.
+  The complete license text is in OFL-1.1-STIX-Two.txt.
+
+The font file is redistributed without modification and is bundled with the
+template rather than sold separately. STIX Fonts and STIX Two are trademarks
+of their respective owners.

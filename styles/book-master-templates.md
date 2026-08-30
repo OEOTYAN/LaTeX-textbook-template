@@ -24,7 +24,7 @@
 
 `readingbox` 用于阅读问题，`sourcebox` 用于材料说明，`questionbox` 用于单个待追踪问题，`noteBox` 用于制作提示。短引文用段首的 `\sidequote` 侧栏，段落结束用 `\bookwrapclear` 收束；长引文用居中的 `fullquote`，作者、作品和版本信息保持在同一条出处行。两者只放原文、作者和版本信息，不追加作者未写出的解释。表格使用 `booktable`，以固定的上下留白回到正文。
 
-数学行内写作 `\(...\)`；需要右侧编号的单行公式用 `equation`，多行公式用 `align`，编号按章递增并可用 `\eqref` 引用。
+数学行内写作 `$...$`；需要右侧编号的单行公式用 `equation`，多行公式用 `align`，编号按章递增并可用 `\eqref` 引用。数学字形固定为仓库内的 STIX Two Math。
 
 ## T01 相关链接
 

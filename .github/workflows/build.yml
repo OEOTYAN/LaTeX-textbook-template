@@ -16,6 +16,9 @@ jobs:
       - name: Check out source
         uses: actions/checkout@v4
 
+      - name: Verify bundled font files
+        run: sha256sum --check fonts/SHA256SUMS.txt
+
       - name: Compile with XeLaTeX
         uses: xu-cheng/latex-action@v4
         with:

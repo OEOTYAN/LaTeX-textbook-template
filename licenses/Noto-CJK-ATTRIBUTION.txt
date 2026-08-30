@@ -1,0 +1,30 @@
+Noto CJK font attribution
+=========================
+
+Files distributed in fonts/:
+  NotoSerifSC-Regular.otf
+  NotoSerifSC-Bold.otf
+  NotoSansCJKsc-Regular.otf
+  NotoSansCJKsc-Bold.otf
+  NotoSansMonoCJKsc-Regular.otf
+  NotoSansMonoCJKsc-Bold.otf
+
+Upstream project:
+  https://github.com/notofonts/noto-cjk
+
+Release packages:
+  Serif2.003 / 14_NotoSerifSC.zip
+  Sans2.004  / 08_NotoSansCJKsc.zip
+  Sans2.004  / 13_NotoSansMonoCJKsc.zip
+
+Copyright notices embedded in the font files:
+  Noto Serif SC:    Copyright 2017-2024 Adobe.
+  Noto Sans CJK SC: Copyright 2014-2021 Adobe.
+
+License:
+  SIL Open Font License, Version 1.1.
+  The complete license text is in OFL-1.1-Noto-CJK.txt.
+
+The six font files are redistributed without modification. The template
+does not sell the font files separately. Google and Noto are trademarks of
+their respective owners.

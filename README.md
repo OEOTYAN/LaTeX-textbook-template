@@ -31,7 +31,7 @@ main.tex                       文档入口与前置页
 preamble.tex                   版式和全部可复用接口
 chapters/sample.tex            视觉校样章节
 styles/                        网格、母版、平面计划、审美检查
-fonts/                         Material Design Icons 字体资源
+fonts/                         Noto CJK 正文字体与 Material Design Icons
 licenses/                      字体许可与归属说明
 .github/workflows/build.yml    GitHub Actions 自动构建
 AGENTS.md                      协作和校样约定
@@ -86,11 +86,13 @@ template-preview.pdf           最近一次人工校样
 
 ### 数学
 
-行内公式写作 `$...$`，不改变中文正文的基线行距。`$$...$$` 会进入 TeX 的陈列公式模式，公式独占一行；无编号陈列使用 `\[...\]` 或 `equation*`，带编号的行间公式使用 `equation`，多行推导使用 `align`。编号按章递增，形式为 `(章.序号)`，交叉引用使用 `\label` 和 `\eqref`。
+行内公式写作 `$...$`，不改变中文正文的基线行距。`$$...$$` 会进入 TeX 的陈列公式模式，公式独占一行；无编号陈列使用 `\[...\]` 或 `equation*`，带编号的行间公式使用 `equation`，多行推导使用 `align`。编号按章递增，形式为 `(章.序号)`，交叉引用使用 `\label` 和 `\eqref`。数学字形由随稿的 STIX Two Math 2.13 b171 提供，`unicode-math` 负责加载；`amsmath` 与 `mathtools` 仍用于公式环境和排版控制。正文中的 `\texttt{...}` 使用随稿的 Noto Sans Mono CJK SC。
 
 ## 字体与许可
 
-在 Tectonic 和 GitHub Actions 的 TeX Live 环境中，中文正文使用 CTeX Fandol 字体集：`FandolSong-Regular`、`FandolSong-Bold`、`FandolKai-Regular` 和 `FandolHei`。Windows MiKTeX 若未安装 Fandol，会按其系统字体集选择 SimSun；这只影响本地替代字体，不改变版心和字号规则。拉丁正文是 Latin Modern Roman，数学使用 Computer Modern 数学字形。栏目图标使用 `fonts/materialdesignicons-webfont.ttf`，归属和 Apache License 2.0 说明见 `fonts/README.md` 与 `licenses/`。
+中文正文固定使用仓库内的 Noto Serif SC 2.003（常规、粗体）和 Noto Sans CJK SC 2.004（常规、粗体），等宽文字使用 Noto Sans Mono CJK SC 2.004，数学使用 STIX Two Math 2.13 b171；均以 SIL Open Font License 1.1 原样分发。来源、版本、版权归属和许可证见 `fonts/README.md`、`licenses/Noto-CJK-ATTRIBUTION.txt`、`licenses/STIX-Two-ATTRIBUTION.txt`、`licenses/OFL-1.1-Noto-CJK.txt` 与 `licenses/OFL-1.1-STIX-Two.txt`；文件校验值见 `fonts/SHA256SUMS.txt`。
+
+`main.tex` 使用 `fontset=none`，`preamble.tex` 通过相对路径显式加载字体，并固定 ctex 的宋体、黑体、仿宋、楷体和等宽接口。字体搜索路径固定为仓库的 `fonts/`；相同字体文件固定了字形和度量。逐页完全一致仍需要相同的 XeTeX/Tectonic 与 LaTeX 包版本，Actions 已固定 TeX Live 2025。栏目图标 `fonts/materialdesignicons-webfont.ttf` 独立采用 Apache License 2.0，归属见 `licenses/MaterialDesign-Webfont-NOTICE.txt`。
 
 ## 页面细节预览
 
@@ -98,7 +100,7 @@ template-preview.pdf           最近一次人工校样
 
 ## 自动构建
 
-`.github/workflows/build.yml` 在 `main` 的 push、Pull Request 和手动触发时运行 XeLaTeX，构建完成后上传 `main.pdf` artifact。工作流使用完整 TeX Live 环境，仓库内的图标字体随源码一起加载。
+`.github/workflows/build.yml` 在 `main` 的 push、Pull Request 和手动触发时运行固定版本的 XeLaTeX，先校验随稿字体，再上传 `main.pdf` artifact。工作流使用完整 TeX Live 2025 环境，仓库内的全部字体资源随源码一起加载。
 
 ## 校样顺序
 

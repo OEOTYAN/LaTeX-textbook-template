@@ -13,7 +13,14 @@
   footskip=11mm
 }
 
-\usepackage{amsmath,amssymb,mathtools}
+\usepackage{amsmath,mathtools}
+% 数学字形也随稿固定；STIX Two Math 覆盖常用符号、字母和可伸缩定界符。
+% 这样公式不再随发行版的 Computer Modern 版本变化。
+\usepackage{unicode-math}
+\setmathfont[
+  Path=fonts/,
+  Extension=.otf
+]{STIXTwoMath-Regular}
 \usepackage{booktabs,array,tabularx,longtable,makecell}
 \usepackage{graphicx}
 \usepackage{wrapfig}
@@ -31,6 +38,141 @@
 \usepackage{xparse}
 \usepackage{hyperref}
 \usepackage{bookmark}
+
+% 正文字体固定为仓库内的 Noto CJK 文件；不读取操作系统字体，也不依赖
+% ctex 在 Windows、Linux 或 macOS 上选择不同的 fontset。字体文件均保持
+% 上游文件名和字形内容，版本与授权记录在 fonts/README.md 和 licenses/。
+\defaultfontfeatures{Ligatures=TeX}
+\setmainfont[
+  Path=fonts/,
+  Extension=.otf,
+  UprightFont=NotoSerifSC-Regular,
+  BoldFont=NotoSerifSC-Bold,
+  ItalicFont=NotoSerifSC-Regular,
+  BoldItalicFont=NotoSerifSC-Bold
+]{NotoSerifSC-Regular}
+\setsansfont[
+  Path=fonts/,
+  Extension=.otf,
+  UprightFont=NotoSansCJKsc-Regular,
+  BoldFont=NotoSansCJKsc-Bold,
+  ItalicFont=NotoSansCJKsc-Regular,
+  BoldItalicFont=NotoSansCJKsc-Bold
+]{NotoSansCJKsc-Regular}
+\setmonofont[
+  Path=fonts/,
+  Extension=.otf,
+  UprightFont=NotoSansMonoCJKsc-Regular,
+  BoldFont=NotoSansMonoCJKsc-Bold,
+  ItalicFont=NotoSansMonoCJKsc-Regular,
+  BoldItalicFont=NotoSansMonoCJKsc-Bold
+]{NotoSansMonoCJKsc-Regular}
+\setCJKmainfont[
+  Path=fonts/,
+  Extension=.otf,
+  UprightFont=NotoSerifSC-Regular,
+  BoldFont=NotoSerifSC-Bold,
+  ItalicFont=NotoSerifSC-Regular,
+  BoldItalicFont=NotoSerifSC-Bold
+]{NotoSerifSC-Regular}
+\setCJKsansfont[
+  Path=fonts/,
+  Extension=.otf,
+  UprightFont=NotoSansCJKsc-Regular,
+  BoldFont=NotoSansCJKsc-Bold,
+  ItalicFont=NotoSansCJKsc-Regular,
+  BoldItalicFont=NotoSansCJKsc-Bold
+]{NotoSansCJKsc-Regular}
+\setCJKmonofont[
+  Path=fonts/,
+  Extension=.otf,
+  UprightFont=NotoSansMonoCJKsc-Regular,
+  BoldFont=NotoSansMonoCJKsc-Bold,
+  ItalicFont=NotoSansMonoCJKsc-Regular,
+  BoldItalicFont=NotoSansMonoCJKsc-Bold
+]{NotoSansMonoCJKsc-Regular}
+% ctex 的宋、黑、仿宋、楷书接口都指向同一组本地字形，避免样式命令
+% 在某个平台重新触发 SimSun、KaiTi 或 Fandol 的系统回退。
+\setCJKfamilyfont{zhsong}[
+  Path=fonts/,
+  Extension=.otf,
+  UprightFont=NotoSerifSC-Regular,
+  BoldFont=NotoSerifSC-Bold,
+  ItalicFont=NotoSerifSC-Regular,
+  BoldItalicFont=NotoSerifSC-Bold
+]{NotoSerifSC-Regular}
+\setCJKfamilyfont{zhhei}[
+  Path=fonts/,
+  Extension=.otf,
+  UprightFont=NotoSansCJKsc-Regular,
+  BoldFont=NotoSansCJKsc-Bold,
+  ItalicFont=NotoSansCJKsc-Regular,
+  BoldItalicFont=NotoSansCJKsc-Bold
+]{NotoSansCJKsc-Regular}
+\setCJKfamilyfont{zhyahei}[
+  Path=fonts/,
+  Extension=.otf,
+  UprightFont=NotoSansCJKsc-Regular,
+  BoldFont=NotoSansCJKsc-Bold,
+  ItalicFont=NotoSansCJKsc-Regular,
+  BoldItalicFont=NotoSansCJKsc-Bold
+]{NotoSansCJKsc-Regular}
+\setCJKfamilyfont{zhfs}[
+  Path=fonts/,
+  Extension=.otf,
+  UprightFont=NotoSerifSC-Regular,
+  BoldFont=NotoSerifSC-Bold,
+  ItalicFont=NotoSerifSC-Regular,
+  BoldItalicFont=NotoSerifSC-Bold
+]{NotoSerifSC-Regular}
+\setCJKfamilyfont{zhkai}[
+  Path=fonts/,
+  Extension=.otf,
+  UprightFont=NotoSerifSC-Regular,
+  BoldFont=NotoSerifSC-Bold,
+  ItalicFont=NotoSerifSC-Regular,
+  BoldItalicFont=NotoSerifSC-Bold
+]{NotoSerifSC-Regular}
+\setCJKfamilyfont{zhli}[
+  Path=fonts/,
+  Extension=.otf,
+  UprightFont=NotoSerifSC-Regular,
+  BoldFont=NotoSerifSC-Bold,
+  ItalicFont=NotoSerifSC-Regular,
+  BoldItalicFont=NotoSerifSC-Bold
+]{NotoSerifSC-Regular}
+\setCJKfamilyfont{zhyou}[
+  Path=fonts/,
+  Extension=.otf,
+  UprightFont=NotoSansCJKsc-Regular,
+  BoldFont=NotoSansCJKsc-Bold,
+  ItalicFont=NotoSansCJKsc-Regular,
+  BoldItalicFont=NotoSansCJKsc-Bold
+]{NotoSansCJKsc-Regular}
+\setCJKfamilyfont{zhmono}[
+  Path=fonts/,
+  Extension=.otf,
+  UprightFont=NotoSansMonoCJKsc-Regular,
+  BoldFont=NotoSansMonoCJKsc-Bold,
+  ItalicFont=NotoSansMonoCJKsc-Regular,
+  BoldItalicFont=NotoSansMonoCJKsc-Bold
+]{NotoSansMonoCJKsc-Regular}
+
+\renewcommand{\CJKrmdefault}{zhsong}
+\renewcommand{\CJKsfdefault}{zhhei}
+\renewcommand{\CJKttdefault}{zhmono}
+\providecommand{\songti}{}
+\renewcommand{\songti}{\CJKfamily{zhsong}}
+\providecommand{\heiti}{}
+\renewcommand{\heiti}{\CJKfamily{zhhei}}
+\providecommand{\fangsong}{}
+\renewcommand{\fangsong}{\CJKfamily{zhfs}}
+\providecommand{\kaishu}{}
+\renewcommand{\kaishu}{\CJKfamily{zhkai}}
+\providecommand{\lishu}{}
+\renewcommand{\lishu}{\CJKfamily{zhli}}
+\providecommand{\youyuan}{}
+\renewcommand{\youyuan}{\CJKfamily{zhyou}}
 
 % Material Design Icons：图标字体作为项目资源随稿件分发，码点按字体清单登记。
 % 图标宏使用固定码点和独立字号，避免把正文字体切换带进正文段落。

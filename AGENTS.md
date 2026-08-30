@@ -10,14 +10,18 @@
 - `preamble.tex`：页面尺寸、字体、颜色、标题、栏目、图像、引文、表格和公式接口的唯一来源。
 - `chapters/`：按章拆分正文；正式文件从 `main.tex` 用 `\input` 接入。
 - `styles/`：网格规格、页面母版、平面计划和审美检查表。
-- `fonts/`：随稿件分发的 Material Design Icons 字体；许可说明在 `licenses/`。
+- `fonts/`：随稿件分发的 Noto CJK 正文字体和 Material Design Icons；许可说明在 `licenses/`，校验值在 `fonts/SHA256SUMS.txt`。
 - `.github/workflows/build.yml`：GitHub Actions 的 XeLaTeX 构建和 PDF artifact 上传。
 - `template-preview.pdf`：最近一次人工校样的可视预览，可以提交；编译中间文件不能提交。
 - `assets/preview-spread.png` 和 `assets/preview-material-page.png`：从最近一次 PDF 直接渲染的 README 展示图，更新预览时同步替换。
 
 ## 字体
 
-Tectonic 和 GitHub Actions 的 TeX Live 构建使用 CTeX Fandol 字体集：`FandolSong-Regular`，粗体为 `FandolSong-Bold`，斜体为 `FandolKai-Regular`，无衬线为 `FandolHei`。Windows MiKTeX 未安装 Fandol 时会使用 SimSun 作为系统替代；校样时应记录所用发行版。拉丁正文使用 Latin Modern Roman，数学沿 Computer Modern 数学字形。Material Design Icons 是单独的本地字体，只用于栏目图标，不作为正文字体。
+正文固定使用 `fonts/` 中的 Noto Serif SC 2.003（常规、粗体）和 Noto Sans CJK SC 2.004（常规、粗体），等宽文字使用 Noto Sans Mono CJK SC 2.004；数学固定使用 STIX Two Math 2.13 b171。四组字体文件按 SIL Open Font License 1.1 原样分发，版本、来源和归属见 `licenses/Noto-CJK-ATTRIBUTION.txt` 与 `licenses/STIX-Two-ATTRIBUTION.txt`，许可证全文分别见 `licenses/OFL-1.1-Noto-CJK.txt` 与 `licenses/OFL-1.1-STIX-Two.txt`。
+
+`main.tex` 使用 `fontset=none`；`preamble.tex` 显式设置 CJK 主字体、无衬线字体、Noto Sans Mono 等宽字体以及 `\songti`、`\heiti`、`\fangsong`、`\kaishu` 等接口，并用 `unicode-math` 加载仓库内的 STIX Two Math。字体搜索路径固定为 `fonts/`，排版不调用操作系统字体或发行版默认 fontset。Material Design Icons 是独立的 Apache License 2.0 图标资源，只用于栏目图标。
+
+字体文件相同即可固定字形和度量；逐页完全一致还需要相同的 XeTeX/Tectonic 版本与 LaTeX 包版本。GitHub Actions 固定使用 TeX Live 2025，发布校样以该构建为准。
 
 ## 版式接口
 
@@ -51,5 +55,5 @@ tectonic -X compile --outdir build main.tex
 
 - 只修改与当前版式或正文任务直接相关的文件，不把 `work/`、日志或临时截图加入提交。
 - 改动接口时同步更新 `README.md`、相关 `styles/*.md` 和本文件。
-- 保留 `fonts/` 与 `licenses/` 的来源和许可说明。
+- 保留 `fonts/` 与 `licenses/` 的来源、许可说明和 `fonts/SHA256SUMS.txt`；替换字体时必须同步更新版本、归属和校验值。
 - 推送前查看 `git status -sb`、`git diff --stat` 和最终 PDF 页数；不要静默覆盖无关文件。
