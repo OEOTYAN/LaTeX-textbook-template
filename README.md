@@ -6,7 +6,7 @@
 
 ![实际编译结果：封面、目录、课页和材料页](assets/preview-spread.png)
 
-上图直接来自当前 `main.tex` 的 PDF 渲染，展示的是成品页面，不是示意图。
+上图由当前 `main.tex` 编译后的 PDF 直接渲染。
 
 ## 快速开始
 
@@ -47,7 +47,7 @@ template-preview.pdf           最近一次人工校样
 
 ## 栏目接口
 
-问题栏目默认使用具有轮廓特征的 `head-question-outline`。需要按语境替换时，`preamble.tex` 还提供 `\mdiChatQuestion`、`\mdiLightbulbQuestion`、`\mdiFileQuestion`、`\mdiTableQuestion`、`\mdiBeakerQuestion`、`\mdiFolderQuestion`、`\mdiCommentQuestion` 和 `\mdiMessageQuestion`。
+问题栏目默认使用 `head-question-outline`。按语境替换时，`preamble.tex` 提供 `\mdiChatQuestion`、`\mdiLightbulbQuestion`、`\mdiFileQuestion`、`\mdiTableQuestion`、`\mdiBeakerQuestion`、`\mdiFolderQuestion`、`\mdiCommentQuestion` 和 `\mdiMessageQuestion`。
 
 ### 小引文
 
