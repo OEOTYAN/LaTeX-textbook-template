@@ -1,0 +1,74 @@
+% 编译根目录是本文件所在目录；所有资源均使用相对路径，便于本地和 Actions 复现。
+\documentclass[UTF8,zihao=-4,a4paper,twoside,openany]{ctexbook}
+\input{preamble.tex}
+
+\begin{document}
+
+% 前置页使用 frontmatter，页码采用罗马数字；正文从 mainmatter 开始改用阿拉伯数字。
+\frontmatter
+
+% 封面只承载书名层级、版本信息和一个可替换的图像网格；不要在这里堆放学科标签。
+\begin{titlepage}
+  \thispagestyle{empty}
+  \begin{tikzpicture}[remember picture,overlay]
+    \fill[booklightblue] (current page.south west) rectangle (current page.north east);
+    \fill[bookblue] (current page.south west) rectangle ([xshift=52mm]current page.north west);
+    \fill[bookorange] ([xshift=52mm]current page.south west) rectangle ([xshift=56mm]current page.north west);
+    \fill[white] ([xshift=56mm]current page.south west) rectangle (current page.north east);
+    \draw[bookcyan!55,line width=0.4pt] ([xshift=111mm,yshift=-176mm]current page.north west) grid[xstep=8mm,ystep=8mm] ([xshift=194mm,yshift=-276mm]current page.north west);
+    \node[anchor=south east,text=booklightblue!85!bookblue,font=\fontsize{128}{128}\selectfont\bfseries] at ([xshift=-17mm,yshift=24mm]current page.south east) {01};
+  \end{tikzpicture}
+  \vspace*{36mm}
+  \noindent\hspace*{0.39\textwidth}
+  \begin{minipage}{0.52\textwidth}
+    \raggedright
+    {\color{bookblue}\fontsize{11}{14}\selectfont 书名\par}
+    \vspace{4mm}
+    {\color{bookink}\fontsize{34}{42}\selectfont\bfseries 主标题\par}
+    \vspace{4mm}
+    {\color{bookgray}\fontsize{18}{25}\selectfont 副标题\par}
+    \vspace{16mm}
+    {\color{bookcyan}\rule{\linewidth}{0.8pt}\par}
+    \vspace{5mm}
+    {\color{bookgray}\small 版本信息\par}
+  \end{minipage}
+  \vfill
+\end{titlepage}
+
+% 扉页登记编写和出版信息，正式稿按出版规范替换待定字段。
+\begin{titlepage}
+  \thispagestyle{empty}
+  \vspace*{15mm}
+  {\color{bookgray}\small 书名页与编写信息}\par
+  \vspace{8mm}
+  \begin{flushright}
+    {\color{bookink}\fontsize{28}{36}\selectfont\bfseries 主标题\par}
+    \vspace{3mm}
+    {\color{bookgray}\fontsize{15}{22}\selectfont 副标题\par}
+  \end{flushright}
+  \vspace{10mm}
+  \noindent\color{bookline}\rule{\linewidth}{0.5pt}\par
+  \vspace{8mm}
+  \begin{flushleft}
+    \small\color{bookgray}
+    编写：作者姓名\\[2mm]
+    版本：第一版\\[2mm]
+    出版信息：待定
+  \end{flushleft}
+  \vfill
+  \begin{flushleft}
+    \small\color{bookgray}
+    出版者：待定\\
+    出版地：待定\\
+    书号：待定
+  \end{flushleft}
+\end{titlepage}
+
+% 目录宏内部负责从新页开始；这里不再额外插入测试分页。
+\bookcontents
+
+% 正文章节从此处装配，正式稿按章拆分到 chapters/ 目录。
+\mainmatter
+\input{chapters/sample}
+
+\end{document}

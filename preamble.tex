@@ -1,0 +1,513 @@
+% 版式母版：A4 双面教材，正文和栏目各有明确的页面职责。
+% 本文件是版式的唯一来源；章节文件只调用这里定义的接口。
+
+\usepackage{geometry}
+\geometry{
+  a4paper,
+  inner=22mm,
+  outer=27mm,
+  top=21mm,
+  bottom=25mm,
+  headheight=15pt,
+  headsep=7mm,
+  footskip=11mm
+}
+
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{booktabs,array,tabularx,longtable,makecell}
+\usepackage{graphicx}
+\usepackage{wrapfig}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{calc,positioning,arrows.meta,fit}
+\usepackage[most]{tcolorbox}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{titletoc}
+\usepackage{setspace}
+\usepackage{needspace}
+\usepackage{etoolbox}
+\usepackage{xparse}
+\usepackage{hyperref}
+\usepackage{bookmark}
+
+% Material Design Icons：图标字体作为项目资源随稿件分发，码点按字体清单登记。
+% 图标宏使用固定码点和独立字号，避免把正文字体切换带进正文段落。
+\newfontfamily\MaterialDesignIcons[
+  Path=fonts/,
+  Extension=.ttf,
+  UprightFont=*,
+  Renderer=OpenType
+]{materialdesignicons-webfont}
+
+% 颜色取自参考教材的蓝色栏目系统，辅色只承担资料分类。
+\definecolor{bookblue}{HTML}{1F78B4}
+\definecolor{bookcyan}{HTML}{54C7D2}
+\definecolor{bookink}{HTML}{262626}
+\definecolor{bookgray}{HTML}{68727A}
+\definecolor{bookline}{HTML}{C9D3D9}
+\definecolor{booklightblue}{HTML}{EAF5FB}
+\definecolor{booklightgreen}{HTML}{E9F3E4}
+\definecolor{booklightyellow}{HTML}{FFF4C9}
+\definecolor{booklightviolet}{HTML}{EEE8F6}
+\definecolor{bookorange}{HTML}{E38A24}
+\definecolor{bookgreen}{HTML}{5D9C74}
+\definecolor{bookviolet}{HTML}{8064A2}
+
+% 图标与栏目字保持同一光学高度，基线略下移以对齐汉字的中线。
+\newcommand{\mdiGlyph}[3][12]{%
+  \raisebox{-0.30ex}{%
+    {\MaterialDesignIcons\fontsize{#1}{#1}\selectfont\color{#2}\char"#3}%
+  }%
+}
+\DeclareRobustCommand{\mdiBook}{\mdiGlyph[12]{bookblue}{F15D6}}
+\DeclareRobustCommand{\mdiDocument}{\mdiGlyph[12]{bookgreen}{F09EE}}
+\DeclareRobustCommand{\mdiQuestion}{\mdiGlyph[12]{bookorange}{F0625}}
+\DeclareRobustCommand{\mdiInfo}{\mdiGlyph[12]{bookviolet}{F02FD}}
+\DeclareRobustCommand{\mdiQuote}{\mdiGlyph[12]{bookorange}{F1022}}
+\DeclareRobustCommand{\mdiLink}{\mdiGlyph[11]{bookblue}{F0339}}
+\DeclareRobustCommand{\mdiImage}{\mdiGlyph[11]{bookcyan}{F0976}}
+\DeclareRobustCommand{\mdiTable}{\mdiGlyph[11]{bookgreen}{F04F1}}
+\DeclareRobustCommand{\mdiKey}{\mdiGlyph[11]{bookorange}{F0336}}
+\DeclareRobustCommand{\mdiSearch}{\mdiGlyph[11]{bookviolet}{F0349}}
+\DeclareRobustCommand{\mdiCompass}{\mdiGlyph[11]{bookblue}{F018C}}
+\DeclareRobustCommand{\mdiTimeline}{\mdiGlyph[11]{bookcyan}{F0BD2}}
+\DeclareRobustCommand{\mdiBookmark}{\mdiGlyph[11]{bookorange}{F00C3}}
+\DeclareRobustCommand{\mdiScale}{\mdiGlyph[11]{bookgreen}{F05D1}}
+\DeclareRobustCommand{\mdiAtom}{\mdiGlyph[11]{bookviolet}{F0768}}
+\DeclareRobustCommand{\mdiBrain}{\mdiGlyph[11]{bookblue}{F09D1}}
+\DeclareRobustCommand{\mdiMap}{\mdiGlyph[11]{bookcyan}{F0982}}
+\DeclareRobustCommand{\mdiTarget}{\mdiGlyph[11]{bookorange}{F04FE}}
+\DeclareRobustCommand{\mdiClipboard}{\mdiGlyph[11]{bookgreen}{F0A38}}
+
+\setstretch{1.20}
+\setlength{\parindent}{2em}
+\setlength{\parskip}{0pt}
+\setlength{\emergencystretch}{2em}
+% 数学行距与正文行距分开校准；行内公式不额外撑高中文行。
+% equation/align 的编号按章递增，\eqref 可在正文中保留括号格式。
+\mathsurround=0pt
+\setlength{\abovedisplayskip}{8pt plus 2pt minus 2pt}
+\setlength{\belowdisplayskip}{8pt plus 2pt minus 2pt}
+\setlength{\abovedisplayshortskip}{4pt plus 1pt minus 1pt}
+\setlength{\belowdisplayshortskip}{6pt plus 1pt minus 1pt}
+\setlength{\jot}{4pt}
+\numberwithin{equation}{chapter}
+\renewcommand{\theequation}{\thechapter.\arabic{equation}}
+\clubpenalty=9000
+\widowpenalty=9000
+\displaywidowpenalty=9000
+\flushbottom
+\setlist{nosep,leftmargin=2.2em}
+\setlist[itemize]{label=\textcolor{bookblue}{\small\ensuremath{\diamond}}}
+
+\hypersetup{
+  unicode=true,
+  colorlinks=true,
+  linkcolor=bookblue,
+  urlcolor=bookblue,
+  citecolor=bookviolet,
+  pdftitle={章与课：版式样张},
+  pdfauthor={}
+}
+\urlstyle{same}
+
+% 页眉只做导航，章首页清空页眉；页码放在外侧，适合装订后的双页阅读。
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[LE]{\small\color{bookgray}\leftmark}
+\fancyhead[RO]{\small\color{bookgray}\rightmark}
+\fancyfoot[LE]{\small\color{bookgray}\thepage}
+\fancyfoot[RO]{\small\color{bookgray}\thepage}
+\renewcommand{\headrulewidth}{0.35pt}
+\renewcommand{\footrulewidth}{0pt}
+\makeatletter
+\renewcommand{\cleardoublepage}{\clearpage}
+\renewcommand{\chaptermark}[1]{\markboth{第\thechapter 章\hspace{0.6em}#1}{}}
+\renewcommand{\sectionmark}[1]{\markright{第\thesection 课\hspace{0.6em}#1}}
+\makeatother
+\fancypagestyle{chapterpage}{%
+  \fancyhf{}
+  \fancyfoot[LE]{\small\color{bookgray}\thepage}
+  \fancyfoot[RO]{\small\color{bookgray}\thepage}
+  \renewcommand{\headrulewidth}{0pt}
+}
+\fancypagestyle{plain}{%
+  \fancyhf{}
+  \fancyfoot[LE]{\small\color{bookgray}\thepage}
+  \fancyfoot[RO]{\small\color{bookgray}\thepage}
+  \renewcommand{\headrulewidth}{0pt}
+}
+
+% 章与课是两级不同的导航单位：章承担页面主标题，课承担连续阅读中的定位。
+\titleformat{\chapter}[block]
+  {\normalfont\bfseries\color{bookink}\raggedright}
+  {\raisebox{0.16\height}{\colorbox{bookblue}{\parbox[c][27mm][c]{35mm}{\centering\color{white}\fontsize{15}{19}\selectfont 第\thechapter 章}}}}
+  {9mm}
+  {\fontsize{34}{41}\selectfont}
+\titlespacing*{\chapter}{0pt}{0pt}{16mm}
+
+% 课是章节内部的第二级标题；课内标题使用 subsection。
+\makeatletter
+\@addtoreset{section}{chapter}
+\makeatother
+\renewcommand{\thesection}{\arabic{section}}
+\renewcommand{\thesubsection}{\arabic{section}.\arabic{subsection}}
+\titleformat{\section}
+  {\normalfont\mdseries\color{bookblue}\fontsize{20}{26}\selectfont\raggedright}
+  {\raisebox{0.10\height}{\fcolorbox{bookblue}{booklightblue}{\parbox[c][12mm][c]{20mm}{\centering\color{bookblue}\fontsize{9.5}{12}\selectfont 第\thesection 课}}}}
+  {6mm}
+  {}
+\titlespacing*{\section}{0pt}{8mm}{6mm}
+\titleformat{\subsection}
+  {\normalfont\bfseries\color{bookblue}\fontsize{14}{20}\selectfont}
+  {\textcolor{bookblue}{\small\ensuremath{\diamond}}}
+  {0.55em}
+  {}
+\titlespacing*{\subsection}{0pt}{5mm}{2mm}
+\titleformat{\subsubsection}
+  {\normalfont\bfseries\color{bookink}\fontsize{12.5}{18}\selectfont}
+  {\thesubsection}
+  {0.5em}
+  {}
+\titlespacing*{\subsubsection}{0pt}{4mm}{2mm}
+
+% 目录层级：章名、课名和课内标题保持轻量秩序。
+% 各 makebox 是编号栏，不是装饰空白；宽度按单/双位课号预留。
+\setcounter{tocdepth}{2}
+\titlecontents{chapter}[0.35em]
+  {\addvspace{0.55em}\bfseries\color{bookink}\fontsize{15}{19}\selectfont}
+  {\makebox[4.0em][l]{\thecontentslabel\hfill}}
+  {}
+  {\titlerule*[0.6pc]{.}\contentspage}
+\titlecontents{section}[4.2em]
+  {\color{bookblue}\fontsize{11.5}{16}\selectfont}
+  {\makebox[4.8em][l]{第\thecontentslabel 课\hfill}}
+  {}
+  {\titlerule*[0.6pc]{.}\contentspage}
+\titlecontents{subsection}[7.2em]
+  {\color{bookgray}\fontsize{11}{15.5}\selectfont}
+  {\makebox[3.2em][l]{\thecontentslabel\hfill}}
+  {}
+  {\titlerule*[0.6pc]{.}\contentspage}
+
+% 目录使用独立页框，内容少时仍保持页面的整体比例。
+\makeatletter
+\newcommand{\bookcontents}{%
+  \clearpage
+  \thispagestyle{plain}%
+  \begin{tikzpicture}[remember picture,overlay]
+    \fill[booklightblue]
+      ([xshift=10mm,yshift=-10mm]current page.north west)
+      rectangle
+      ([xshift=-10mm,yshift=10mm]current page.south east);
+  \end{tikzpicture}%
+  \vspace*{17mm}%
+  \begin{center}
+    {\color{bookink}\fontsize{25}{32}\selectfont\bfseries 目\hspace{0.7em}录}
+  \end{center}
+  \vspace{8mm}
+  \@starttoc{toc}%
+  \clearpage
+}
+\makeatother
+
+% 栏目框：浅底色、细侧线、可见标题。正文不再被厚边框切成卡片。
+% 四种颜色只标记栏目职责，标题和正文的字号仍由同一套比例控制。
+\tcbset{
+  bookbox/.style={
+    enhanced,
+    breakable,
+    boxrule=0pt,
+    frame hidden,
+    sharp corners,
+    left=5mm,
+    right=4mm,
+    top=3mm,
+    bottom=3mm,
+    before skip=5mm,
+    after skip=6mm,
+    fontupper=\normalsize,
+    coltitle=bookink,
+    fonttitle=\bfseries\normalsize,
+    toptitle=1.6mm,
+    bottomtitle=1.6mm,
+    lefttitle=4mm,
+    titlerule=0pt
+  }
+}
+\newtcolorbox{readingbox}[1][阅读与思考]{
+  bookbox,
+  colback=booklightblue!62!white,
+  borderline west={1.1pt}{0pt}{bookblue},
+  colbacktitle=booklightblue,
+  title={\mdiBook\hspace{0.8em}#1}
+}
+\newtcolorbox{sourcebox}[1][原典与材料]{
+  bookbox,
+  colback=booklightgreen!62!white,
+  borderline west={1.1pt}{0pt}{bookgreen},
+  colbacktitle=booklightgreen,
+  title={\mdiDocument\hspace{0.8em}#1}
+}
+\newtcolorbox{questionbox}[1][问题]{
+  bookbox,
+  colback=booklightyellow!64!white,
+  borderline west={1.1pt}{0pt}{bookorange},
+  colbacktitle=booklightyellow,
+  title={\mdiQuestion\hspace{0.8em}#1}
+}
+\newtcolorbox{noteBox}[1][提示]{
+  bookbox,
+  colback=booklightviolet!64!white,
+  borderline west={1.1pt}{0pt}{bookviolet},
+  colbacktitle=booklightviolet,
+  title={\mdiInfo\hspace{0.8em}#1}
+}
+\makeatletter
+\newcommand{\bookwrapclear}{%
+  \par
+  \ifnum\c@WF@wrappedlines>\z@
+    \@tempcnta=\c@WF@wrappedlines
+    \advance\@tempcnta by -1
+    \vspace*{\dimexpr\@tempcnta\baselineskip\relax}%
+  \fi
+  \WFclear
+}
+\makeatother
+% 引文折角固定为 5 mm；左下白色裁角和右上浅色折面共同构成纸页折角。
+\newcommand{\quotefoldsize}{5mm}
+\NewDocumentEnvironment{quotenote}{O{r} O{0.24\linewidth} m m}{%
+  \begin{wrapfigure}{#1}{#2}
+    \vspace{-2mm}
+    \begin{tcolorbox}[
+      enhanced,
+      boxrule=0pt,
+      frame hidden,
+      sharp corners,
+      width=\linewidth,
+      colback=booklightyellow!82!white,
+      left=3mm,
+      right=3mm,
+      top=2.5mm,
+      bottom=6mm,
+      before skip=0pt,
+      after skip=0pt,
+      overlay unbroken={%
+        \fill[white] (frame.south west) -- ++(0,\quotefoldsize) -- ++(\quotefoldsize,-\quotefoldsize) -- cycle;
+        \fill[bookorange!18!booklightyellow] ([yshift=\quotefoldsize]frame.south west) -- ++(\quotefoldsize,0) -- ++(0,-\quotefoldsize) -- cycle;
+        \draw[bookorange!32!booklightyellow,line width=0.2pt] ([yshift=\quotefoldsize]frame.south west) -- ([xshift=\quotefoldsize]frame.south west);
+      }
+    ]
+    \raggedright
+    {\footnotesize\color{bookgray}\mdiQuote\hspace{0.45em}\textbf{#3}\par\scriptsize #4}\par\smallskip
+    \fontsize{10.5}{15.5}\selectfont\itshape
+}{%
+  \end{tcolorbox}
+  \end{wrapfigure}
+}
+\NewDocumentEnvironment{fullquote}{O{0.82\linewidth} m m}{%
+  \Needspace{8\baselineskip}%
+  \begin{center}
+  \begin{tcolorbox}[
+    enhanced,
+    boxrule=0pt,
+    frame hidden,
+    sharp corners,
+    width=#1,
+    colback=booklightyellow!82!white,
+    left=5mm,
+    right=5mm,
+    top=4mm,
+    bottom=6mm,
+    before skip=5mm,
+    after skip=6mm,
+    overlay unbroken={%
+      \fill[white] (frame.south west) -- ++(0,\quotefoldsize) -- ++(\quotefoldsize,-\quotefoldsize) -- cycle;
+      \fill[bookorange!18!booklightyellow] ([yshift=\quotefoldsize]frame.south west) -- ++(\quotefoldsize,0) -- ++(0,-\quotefoldsize) -- cycle;
+      \draw[bookorange!32!booklightyellow,line width=0.2pt] ([yshift=\quotefoldsize]frame.south west) -- ([xshift=\quotefoldsize]frame.south west);
+    }
+  ]
+  \raggedright
+  {\footnotesize\color{bookgray}\mdiQuote\hspace{0.55em}\textbf{#2}\enspace #3}\par\smallskip
+  \normalsize\itshape
+}{%
+  \end{tcolorbox}
+  \end{center}\par
+}
+
+% 小引文与侧边图像共用同一条 wrapfigure 路径，保证正文从盒子旁边开始排。
+% sidequote 只能从段首调用；bookwrapclear 负责结束短段落留下的剩余环绕高度。
+\newcommand{\bookquotecontent}[3]{%
+  \begin{tcolorbox}[
+    enhanced,
+    boxrule=0pt,
+    frame hidden,
+    sharp corners,
+    width=\linewidth,
+    colback=booklightyellow!82!white,
+    left=3mm,
+    right=3mm,
+    top=2.5mm,
+    bottom=6mm,
+    before skip=0pt,
+    after skip=0pt,
+    overlay unbroken={%
+      \fill[white] (frame.south west) -- ++(0,\quotefoldsize) -- ++(\quotefoldsize,-\quotefoldsize) -- cycle;
+      \fill[bookorange!18!booklightyellow] ([yshift=\quotefoldsize]frame.south west) -- ++(\quotefoldsize,0) -- ++(0,-\quotefoldsize) -- cycle;
+      \draw[bookorange!32!booklightyellow,line width=0.2pt] ([yshift=\quotefoldsize]frame.south west) -- ([xshift=\quotefoldsize]frame.south west);
+    }
+  ]
+  \raggedright
+  {\footnotesize\color{bookgray}\mdiQuote\hspace{0.45em}\textbf{#1}\par\scriptsize #2}\par\smallskip
+  \fontsize{10.5}{15.5}\selectfont\itshape #3
+  \end{tcolorbox}%
+}
+\NewDocumentCommand{\sidequote}{O{r} O{0.24\linewidth} m m m}{%
+  \ifvmode\Needspace{8\baselineskip}\fi
+  \begin{wrapfigure}{#1}{#2}
+    \vspace{-2mm}
+    \bookquotecontent{#3}{#4}{#5}
+  \end{wrapfigure}%
+}
+
+% 表格统一处理前后呼吸，避免表尾直接撞上下一段正文。
+% 采用 minipage 而非 center，消除 center 环境自带的额外 topsep。
+\NewDocumentEnvironment{booktable}{O{0.92\linewidth} m +b}{%
+  \par\addvspace{1mm}%
+  \noindent
+  \begin{minipage}{\linewidth}
+    \centering
+    \small
+    \renewcommand{\arraystretch}{1.18}%
+    \begin{tabularx}{#1}{#2}
+      #3
+    \end{tabularx}
+  \end{minipage}
+  \par\addvspace{6mm}%
+}{}
+\newcommand{\tablecaption}[1]{%
+  \par\addvspace{2mm}\noindent
+  {\footnotesize\color{bookgray}\mdiTable\hspace{0.55em}#1}\par\vspace{1mm}
+}
+
+% 参考书中的“相关链接”是页面节奏，而不是一只大盒子。
+\newcommand{\relatedlink}[1]{%
+  \par\Needspace{4\baselineskip}%
+  \vspace{2mm}\noindent
+  {\color{bookblue}\mdiLink\hspace{0.65em}\bfseries 相关链接}\hspace{0.6em}%
+  {\color{bookline}\leaders\hbox{\rule[0.45ex]{1.1mm}{0.35pt}}\hfill\kern0pt}\par
+  {\small\color{bookgray}#1\par}\vspace{2mm}
+}
+
+% 章导言和图像位置的统一接口。样张中用抽象占位块，正式稿替换为真实图像。
+% 占位块只表示网格尺寸；正式图像由 fullimage/sideimage 按原比例载入。
+\newcommand{\chapterlead}[1]{%
+  \begin{tcolorbox}[
+    enhanced,
+    frame hidden,
+    boxrule=0pt,
+    colback=white,
+    borderline west={1.2pt}{0pt}{bookcyan},
+    left=5mm,
+    right=0pt,
+    top=0pt,
+    bottom=0pt,
+    before skip=4mm,
+    after skip=5mm
+  ]
+  \normalsize\color{bookblue}#1
+  \end{tcolorbox}
+}
+\newcommand{\lessonlead}[1]{%
+  \begin{tcolorbox}[
+    enhanced,
+    frame hidden,
+    boxrule=0pt,
+    colback=white,
+    borderline west={1.2pt}{0pt}{bookcyan},
+    left=5mm,
+    right=0pt,
+    top=0pt,
+    bottom=0pt,
+    before skip=3mm,
+    after skip=5mm
+  ]
+  \normalsize\color{bookblue}#1
+  \end{tcolorbox}
+}
+\newcommand{\chaptervisual}[1]{%
+  \begin{center}
+    \begin{tikzpicture}
+      \node[draw=bookline,fill=booklightblue,minimum width=0.82\linewidth,minimum height=120mm,align=center,text=bookblue,font=\small,rounded corners=2mm] (cv) {#1};
+      \draw[bookcyan,line width=1.1pt] (cv.north west) -- (cv.south east);
+      \draw[bookcyan,line width=1.1pt] (cv.south west) -- (cv.north east);
+    \end{tikzpicture}
+  \end{center}
+}
+\newcommand{\chapterabstract}[1]{%
+  \begin{tcolorbox}[
+    enhanced,
+    frame hidden,
+    boxrule=0pt,
+    colback=white,
+    borderline west={1.2pt}{0pt}{bookgray},
+    left=5mm,
+    right=0pt,
+    top=0pt,
+    bottom=0pt,
+    before skip=4mm,
+    after skip=5mm
+  ]
+  \normalsize\color{bookgray}#1
+  \end{tcolorbox}
+}
+\newcommand{\fullplaceholder}[2][0.48\textwidth]{%
+  \begin{center}
+    \begin{tikzpicture}
+      \node[draw=bookline,fill=booklightblue,minimum width=#1,minimum height=42mm,align=center,text=bookblue,font=\small] (img) {#2};
+      \draw[bookcyan,line width=1.2pt] (img.north west) -- (img.south east);
+      \draw[bookcyan,line width=1.2pt] (img.south west) -- (img.north east);
+    \end{tikzpicture}
+  \end{center}
+}
+\newcommand{\imageplaceholder}{\fullplaceholder}
+\newcommand{\fullimage}[2][\linewidth]{%
+  \begin{center}
+    \includegraphics[width=#1]{#2}
+  \end{center}
+}
+\newcommand{\sideplaceholder}[4][r]{%
+  \Needspace{8\baselineskip}%
+  \begin{wrapfigure}{#1}{#2}
+    \vspace{-2mm}
+    \centering
+    {\setlength{\fboxsep}{0pt}%
+      \fcolorbox{bookline}{booklightblue}{%
+        \parbox[c][#3][c]{\dimexpr\linewidth-2\fboxrule\relax}{%
+          \centering\small\color{bookblue}图像位置
+        }%
+      }%
+    }%
+    \captionline{#4}
+  \end{wrapfigure}
+}
+\newcommand{\sideimage}[4][r]{%
+  \Needspace{8\baselineskip}%
+  \begin{wrapfigure}{#1}{#2}
+    \vspace{-2mm}
+    \centering
+    \includegraphics[width=\linewidth]{#3}
+    \captionline{#4}
+  \end{wrapfigure}
+}
+\newcommand{\captionline}[1]{\begin{center}\footnotesize\color{bookgray}\mdiImage\hspace{0.45em}#1\end{center}}
+\newcommand{\term}[1]{\textbf{#1}}
+\newcommand{\foreignterm}[1]{\textit{#1}}
+
+% 让章节首面使用专门的页眉状态。
+\makeatletter
+\pretocmd{\chapter}{\thispagestyle{chapterpage}}{}{}
+\pretocmd{\section}{\Needspace{12\baselineskip}}{}{}
+\makeatother

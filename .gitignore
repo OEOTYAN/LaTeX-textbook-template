@@ -1,0 +1,28 @@
+# LaTeX intermediate files
+*.aux
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.idx
+*.ilg
+*.ind
+*.log
+*.nav
+*.out
+*.run.xml
+*.snm
+*.synctex.gz
+*.toc
+*.xdv
+*.vrb
+
+# Local build directories and editor metadata
+/build/
+/work/
+.DS_Store
+Thumbs.db
+.vscode/
+
+# The repository keeps the named preview, not an accidental root build.
+/main.pdf

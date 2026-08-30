@@ -1,0 +1,9 @@
+Material Design Icons Webfont attribution
+
+File: fonts/materialdesignicons-webfont.ttf
+Source: https://github.com/Templarian/MaterialDesign-Webfont
+License: Apache License 2.0
+License text: https://www.apache.org/licenses/LICENSE-2.0
+
+The font is distributed as a separate resource for the template's interface
+icons. The upstream project and its license terms remain authoritative.
