@@ -1,8 +1,8 @@
-# A4 章—课教材模板
+# A4 中文书籍 LaTeX 模板
 
 [![Build textbook PDF](https://github.com/OEOTYAN/LaTeX-textbook-template/actions/workflows/build.yml/badge.svg)](https://github.com/OEOTYAN/LaTeX-textbook-template/actions/workflows/build.yml)
 
-这是一个可直接编译的中文 A4 双面教材母版。它把封面、目录、章页、课页、正文、材料栏、侧边图像、引文、表格和数学公式放在同一套网格里；`chapters/sample.tex` 是视觉校样，替换它即可接入正式章节。
+这是一个可直接编译的中文 A4 双面书籍母版。它把封面、目录、正文、材料栏、侧边图像、引文、表格和数学公式放在同一套网格里；`chapters/sample.tex` 使用章、课层级展示页面接口，这只是校样示例，正式项目可以改成部分、章、节或其他层级。
 
 ## 快速开始
 
@@ -34,11 +34,11 @@ AGENTS.md                      协作和校样约定
 template-preview.pdf           最近一次人工校样
 ```
 
-## 页面层级
+## 示例层级接口
 
-- `\chapter{...}`：章标题，35 × 27 mm 编号块，34 pt 黑色重标题。
-- `\section{...}`：课标题，20 × 12 mm 浅蓝编号块，20 pt 蓝色标题；两位数课号也有预留宽度。
-- `\subsection{...}`：课内标题，14 pt 蓝色标题。
+- `\chapter{...}`：当前校样的第一层标题，35 × 27 mm 编号块，34 pt 黑色重标题。
+- `\section{...}`：当前校样的第二层标题，20 × 12 mm 浅蓝编号块，20 pt 蓝色标题；两位数编号也有预留宽度。
+- `\subsection{...}`：当前校样的第三层标题，14 pt 蓝色标题。
 - 正文：中文小四，1.20 倍行距，首行缩进 2em，双面内外侧边距由 `geometry` 统一管理。
 
 ## 栏目接口
@@ -80,7 +80,7 @@ template-preview.pdf           最近一次人工校样
 
 ### 数学
 
-行内公式写作 `\(...\)`，不改变中文正文的基线行距。带编号的行间公式使用 `equation`，多行推导使用 `align`；编号按章递增，形式为 `(章.序号)`，交叉引用使用 `\label` 和 `\eqref`。
+行内公式写作 `$...$`，不改变中文正文的基线行距。`$$...$$` 会进入 TeX 的陈列公式模式，公式独占一行；无编号陈列使用 `\[...\]` 或 `equation*`，带编号的行间公式使用 `equation`，多行推导使用 `align`。编号按章递增，形式为 `(章.序号)`，交叉引用使用 `\label` 和 `\eqref`。
 
 ## 字体与许可
 
