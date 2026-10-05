@@ -266,6 +266,29 @@
 }
 \urlstyle{same}
 
+% 正文出处的统一接口；默认放入脚注，也可以整体切换为文中括注。
+% 可选参数用于在脚注中展开一个更完整的出处，正文仍保留短写。
+\newif\ifbooksourceinline
+\newcommand{\sourcecitesinline}{\booksourceinlinetrue}
+\newcommand{\sourcecitesasfootnotes}{\booksourceinlinefalse}
+\sourcecitesasfootnotes
+\newcounter{booklastsourcefootnote}
+\NewDocumentCommand{\sourcecite}{o m}{%
+  \ifbooksourceinline
+    （#2）%
+  \else
+    \IfValueTF{#1}{\footnote{#1}}{\footnote{#2}}%
+    \setcounter{booklastsourcefootnote}{\value{footnote}}%
+  \fi
+}
+\NewDocumentCommand{\sourceciteagain}{m}{%
+  \ifbooksourceinline
+    （#1）%
+  \else
+    \footnotemark[\value{booklastsourcefootnote}]%
+  \fi
+}
+
 % 页眉只做导航，章首页清空页眉；页码放在外侧，适合装订后的双页阅读。
 \pagestyle{fancy}
 \fancyhf{}
@@ -292,6 +315,12 @@
   \fancyfoot[RO]{\small\color{bookgray}\thepage}
   \renewcommand{\headrulewidth}{0pt}
 }
+\fancypagestyle{bookfrontpage}{%
+  \fancyhf{}
+  \fancyfoot[LE]{\small\color{bookgray}\thepage}
+  \fancyfoot[RO]{\small\color{bookgray}\thepage}
+  \renewcommand{\headrulewidth}{0pt}
+}
 
 % 样张用两级导航单位展示标题关系；正式书稿可以把这些接口映射到自己的目录层级。
 \titleformat{\chapter}[block]
@@ -304,6 +333,20 @@
 % 课是章节内部的第二级标题；课内标题使用 subsection。
 \makeatletter
 \@addtoreset{section}{chapter}
+\makeatother
+
+% 前言标题与正文从同一页开始；正文文件只需调用 \bookforeword。
+\makeatletter
+\newcommand{\bookforeword}{%
+  \clearpage
+  \phantomsection
+  \addcontentsline{toc}{chapter}{前言}%
+  \markboth{前言}{}%
+  \thispagestyle{bookfrontpage}%
+  \vspace*{16mm}%
+  \noindent{\color{bookink}\fontsize{22}{28}\selectfont\bfseries 前言\par}%
+  \vspace{6mm}%
+}
 \makeatother
 \renewcommand{\thesection}{\arabic{section}}
 \renewcommand{\thesubsection}{\arabic{section}.\arabic{subsection}}
@@ -460,36 +503,6 @@
   \end{tcolorbox}
   \end{wrapfigure}
 }
-\NewDocumentEnvironment{fullquote}{O{0.82\linewidth} m m}{%
-  \Needspace{8\baselineskip}%
-  \begin{center}
-  \begin{tcolorbox}[
-    enhanced,
-    boxrule=0pt,
-    frame hidden,
-    sharp corners,
-    width=#1,
-    colback=booklightyellow!82!white,
-    left=5mm,
-    right=5mm,
-    top=4mm,
-    bottom=6mm,
-    before skip=5mm,
-    after skip=6mm,
-    overlay unbroken={%
-      \fill[white] (frame.south west) -- ++(0,\quotefoldsize) -- ++(\quotefoldsize,-\quotefoldsize) -- cycle;
-      \fill[bookorange!18!booklightyellow] ([yshift=\quotefoldsize]frame.south west) -- ++(\quotefoldsize,0) -- ++(0,-\quotefoldsize) -- cycle;
-      \draw[bookorange!32!booklightyellow,line width=0.2pt] ([yshift=\quotefoldsize]frame.south west) -- ([xshift=\quotefoldsize]frame.south west);
-    }
-  ]
-  \raggedright
-  {\footnotesize\color{bookgray}\mdiQuote\hspace{0.55em}\textbf{#2}\enspace #3}\par\smallskip
-  \normalsize\itshape
-}{%
-  \end{tcolorbox}
-  \end{center}\par
-}
-
 % 小引文与侧边图像共用同一条 wrapfigure 路径，保证正文从盒子旁边开始排。
 % sidequote 只能从段首调用；bookwrapclear 负责结束短段落留下的剩余环绕高度。
 \newcommand{\bookquotecontent}[3]{%
@@ -524,6 +537,263 @@
     \bookquotecontent{#3}{#4}{#5}
   \end{wrapfigure}%
 }
+
+% fullquote 是自动引文接口：先按 40% 版心量高，短引文贴外侧，
+% 放不下、会跨页或后文不足以环绕时自动改为 90% 版心的宽幅引文。
+% 位置和环绕行数写入 aux，下一遍编译据此稳定排法；可选参数保留作兼容位。
+\newcommand{\quotefoldoverlay}{%
+  \fill[white] (frame.south west) -- ++(0,\quotefoldsize) -- ++(\quotefoldsize,-\quotefoldsize) -- cycle;
+  \fill[bookorange!18!booklightyellow] ([yshift=\quotefoldsize]frame.south west) -- ++(\quotefoldsize,0) -- ++(0,-\quotefoldsize) -- cycle;
+  \draw[bookorange!32!booklightyellow,line width=0.2pt] ([yshift=\quotefoldsize]frame.south west) -- ([xshift=\quotefoldsize]frame.south west);
+}
+\makeatletter
+\def\fullquote@sidemode{side}
+\def\gfullquote@mode{full}
+\def\gfullquote@author{}
+\def\gfullquote@source{}
+\def\gfullquote@body{}
+\newbox\fq@sbox
+\newdimen\fq@w
+\newdimen\fq@H
+\newdimen\fq@Hgrid
+\newdimen\fq@bottom
+\newdimen\fq@asc
+\newdimen\fq@dsc
+\newcount\fq@lines
+\newcount\fq@tmpcnt
+\newcount\fq@est
+\newcount\fq@pars
+\newif\iffq@wrapping
+\newif\iffq@counting
+\newif\iffq@ok
+\def\fq@key{}
+\def\fq@prevkey{}
+\def\fq@prevmode{}
+\def\fq@place{o}
+% 上一遍的引文记录：位置、页面、脚注区高度和是否锁定为 full。
+\def\fq@rec#1#2#3{\expandafter\xdef\csname fq@#1@#2\endcsname{#3}}
+\def\fq@foot#1#2{\expandafter\xdef\csname fq@foot@#1\endcsname{#2}}
+\def\fq@val#1{\ifcsname fq@\fq@key @#1\endcsname\csname fq@\fq@key @#1\endcsname\else 0\fi}
+\def\fq@textbottom{\dimexpr\paperheight-1in-\voffset-\topmargin-\headheight-\headsep-\textheight\relax}
+\def\fq@foottop#1{\numexpr\fq@textbottom+\ifcsname fq@foot@#1\endcsname\csname fq@foot@#1\endcsname\else 0\fi\relax}
+% 记录当前位置的纵坐标、绝对页号和页码；值在 shipout 时展开。
+\def\fq@pos#1{%
+  \pdfsavepos
+  \edef\fq@tmp{\write\@auxout{%
+    \string\fq@rec{\fq@key}{#1y}{\noexpand\the\pdflastypos}%
+    \string\fq@rec{\fq@key}{#1p}{\noexpand\the\ReadonlyShipoutCounter}%
+    \string\fq@rec{\fq@key}{#1g}{\noexpand\the\c@page}}}%
+  \fq@tmp
+  \ifvmode\if@nobreak\nobreak\fi\fi}
+\pretocmd{\@makecol}{%
+  \ifvoid\footins\else
+    \immediate\write\@auxout{\string\fq@foot{\the\numexpr\ReadonlyShipoutCounter+1\relax}{\the\numexpr\dimexpr\ht\footins+\dp\footins+\skip\footins\relax\relax}}%
+  \fi}{}{}
+\AddToHook{para/begin}{\iffq@counting\global\advance\fq@pars\@ne\fi}
+% wrapfig 的默认余量检查会把已经量好的 side 盒子下沉；自动引文使用已记录的位置直接放置。
+\let\fq@orig@putfigmaybe\WF@putfigmaybe
+\def\WF@putfigmaybe{%
+  \iffq@wrapping
+    \global\fq@wrappingfalse
+    \expandafter\fq@putfig
+  \else
+    \expandafter\fq@orig@putfigmaybe
+  \fi}
+\def\fq@putfig{%
+  \vskip-\parskip
+  \noindent
+  \global\WF@floatfalse
+  {\ifodd\if@twoside\c@page\else\@ne\fi
+    \lccode`i`l\lccode`o`r\else \lccode`i`r\lccode`o`l\fi
+    \xdef\WF@place{\the\lccode\lccode\WF@place}}%
+  \hbox to\z@{%
+   \@tempdima\wd\WF@box \@tempdimb\WF@ovh
+   \advance\@tempdima-\@tempdimb \advance\@tempdima\columnsep
+   \advance\@tempdimb\hsize \advance\@tempdimb-\@tempdima
+   \xdef\WF@adjlw{\the\@tempdima}%
+   \ifnum `l=\WF@place
+    \hss
+    \def\@tempa{\kern\columnsep}%
+   \else
+    \@tempdima\z@
+    \kern\@tempdimb \kern\columnsep
+    \def\@tempa{\hss}%
+   \fi
+   \ifdim\@tempdimb<\hsize
+    \xdef\WF@wrapil{\the\@tempdima \the\@tempdimb}%
+    \xdef\WF@adjtlm{\the\@tempdima}%
+   \else
+    \xdef\WF@wrapil{\z@ \the\hsize}%
+    \xdef\WF@adjlw{\z@}\xdef\WF@adjtlm{\z@}%
+   \fi
+   \dp\WF@box\z@ \box\WF@box \@tempa
+  }%
+  \aftergroup\WF@startwrapping}
+\def\fq@setplace#1{\ifodd#1\relax\gdef\fq@place{r}\else\gdef\fq@place{l}\fi}
+% 上一遍排成 side：盒底不压脚注、上下在同一页，且后文把盒子环绕完。
+\def\fq@checkside{%
+  \fq@oktrue
+  \ifnum\fq@val{short}>\z@ \fq@okfalse\fi
+  \ifnum\fq@val{tp}=\fq@val{bp}\relax\else\fq@okfalse\fi
+  \ifnum\numexpr\fq@val{by}-\dimexpr2pt\relax\relax<\fq@foottop{\fq@val{bp}}\relax\fq@okfalse\fi
+  \iffq@ok
+    \fq@setplace{\fq@val{tg}}%
+  \else
+    \gdef\gfullquote@mode{full}%
+    \immediate\write\@auxout{\string\fq@rec{\fq@key}{lock}{\fq@val{tg}}}%
+  \fi}
+% 上一遍排成 full：按 full 起点估算 side 盒的位置，并按后文行数估算能否环绕完。
+\def\fq@checkfull{%
+  \fq@okfalse
+  \ifnum\numexpr\fq@val{rg}-\fq@val{lock}\relax<2 \ifnum\fq@val{rg}<\fq@val{lock}\relax\fq@okfalse\else\fq@oktrue\fi\else\fq@okfalse\fi
+  \iffq@ok
+    \fq@okfalse
+    \immediate\write\@auxout{\string\fq@rec{\fq@key}{lock}{\fq@val{lock}}}%
+  \else\ifcsname fq@\fq@key @ry\endcsname
+    \fq@oktrue
+    \ifnum\numexpr\fq@val{ry}-\dimexpr\baselineskip-\fq@asc-\fq@dsc+\fq@Hgrid+2pt\relax\relax<\fq@foottop{\fq@val{rp}}\relax
+      \fq@okfalse
+    \fi
+    \ifcsname fq@\fq@key @cy\endcsname
+      \ifnum\fq@val{cp}=\fq@val{ap}\relax
+        \fq@tmpcnt=\numexpr(\fq@val{ay}-\fq@val{cy})/\dimexpr\baselineskip\relax\relax
+        \advance\fq@tmpcnt-\fq@val{np}\relax
+        \fq@est=\numexpr\fq@tmpcnt*\dimexpr\linewidth\relax/\dimexpr\linewidth-\fq@w-\columnsep\relax+\fq@val{np}-1\relax
+        \ifnum\fq@est<\fq@lines\fq@okfalse\fi
+      \fi
+    \fi
+  \fi\fi
+  \iffq@ok\fq@setplace{\fq@val{rg}}\else\gdef\gfullquote@mode{full}\fi}
+\def\fq@decide{%
+  \gdef\gfullquote@mode{side}\gdef\fq@place{o}%
+  \ifcsname fq@\fq@key @mode\endcsname
+    \if s\csname fq@\fq@key @mode\endcsname
+      \fq@checkside
+    \else
+      \fq@checkfull
+    \fi
+  \fi}
+\newcommand{\fq@sidetcb}[1]{%
+  \begin{tcolorbox}[
+    enhanced,
+    boxrule=0pt,
+    frame hidden,
+    sharp corners,
+    width=\fq@w,
+    colback=booklightyellow!82!white,
+    left=3mm,right=3mm,top=2.5mm,bottom=6mm,
+    before skip=0pt,after skip=0pt,
+    overlay unbroken={\quotefoldoverlay},
+    #1
+  ]
+  \raggedright
+  {\interlinepenalty=10000\footnotesize\color{bookgray}\mdiQuote\hspace{0.45em}\textbf{\gfullquote@author}\par\scriptsize \gfullquote@source\par}\nobreak\smallskip\nobreak
+  \normalsize\itshape \gfullquote@body
+  \end{tcolorbox}}
+\newcommand{\fullquotewrapclear}{%
+  \par
+  \ifx\fq@prevkey\@empty\else
+    \begingroup
+    \let\fq@key\fq@prevkey
+    \ifx\fq@prevmode\fullquote@sidemode
+      \ifvoid\WF@box
+        \ifnum\c@WF@wrappedlines>\@ne
+          \immediate\write\@auxout{\string\fq@rec{\fq@key}{short}{\the\numexpr\c@WF@wrappedlines-1\relax}}%
+        \fi
+      \else
+        \immediate\write\@auxout{\string\fq@rec{\fq@key}{short}{99}}%
+      \fi
+    \else
+      \fq@pos{c}%
+      \immediate\write\@auxout{\string\fq@rec{\fq@key}{np}{\the\fq@pars}}%
+    \fi
+    \endgroup
+    \global\let\fq@prevkey\@empty
+    \global\fq@countingfalse
+  \fi
+  \global\fq@wrappingfalse
+  \ifnum\c@WF@wrappedlines>\@ne
+    \@tempcnta=\c@WF@wrappedlines
+    \advance\@tempcnta by -1
+    \vspace*{\dimexpr\@tempcnta\baselineskip\relax}%
+  \fi
+  \WFclear
+}
+\newcommand{\fullquote@after}{%
+  \par
+  \global\let\fq@prevkey\fq@key
+  \global\let\fq@prevmode\gfullquote@mode
+  \ifx\gfullquote@mode\fullquote@sidemode
+    \immediate\write\@auxout{\string\fq@rec{\fq@key}{mode}{s}}%
+    \begin{wrapfigure}[\the\fq@lines]{\fq@place}{\fq@w}
+      \hrule\@height\fq@asc\@depth\z@\@width\z@
+      \vskip-\fq@asc
+      \fq@pos{t}%
+      \setbox\fq@sbox\vbox{\hsize\fq@w\fq@sidetcb{height=\fq@Hgrid,bottom=\fq@bottom}}%
+      \box\fq@sbox
+      \fq@pos{b}%
+    \end{wrapfigure}%
+    \global\fq@wrappingtrue
+  \else
+    \immediate\write\@auxout{\string\fq@rec{\fq@key}{mode}{f}}%
+    \fq@pos{r}%
+    \begin{tcolorbox}[
+      enhanced,
+      breakable,
+      boxrule=0pt,
+      frame hidden,
+      sharp corners,
+      width=0.90\linewidth,
+      center,
+      lines before break=2,
+      colback=booklightyellow!82!white,
+      left=5mm,right=5mm,top=4mm,bottom=6mm,
+      before skip=5mm,after skip=6mm,
+      overlay unbroken={\quotefoldoverlay},
+      overlay last={\quotefoldoverlay}
+    ]
+    \raggedright
+    {\interlinepenalty=10000\footnotesize\color{bookgray}\mdiQuote\hspace{0.55em}\textbf{\gfullquote@author}\enspace \gfullquote@source\par}\nobreak\smallskip\nobreak
+    \normalsize\itshape \gfullquote@body
+    \end{tcolorbox}
+    \par
+    \fq@pos{a}%
+    \global\fq@pars\z@
+    \global\fq@countingtrue
+  \fi
+}
+\NewDocumentEnvironment{fullquote}{O{} m m +b}{%
+  \fullquotewrapclear
+  \gdef\gfullquote@author{#2}%
+  \gdef\gfullquote@source{#3}%
+  \gdef\gfullquote@body{#4}%
+  \xdef\fq@key{\mdfivesum{\detokenize{#2}\detokenize{#3}\detokenize{#4}}}%
+  \gdef\gfullquote@mode{full}%
+  \global\fq@w=0.40\linewidth
+  \global\let\fq@savednobreak\if@nobreak
+  \setbox\fq@sbox\vbox{\hsize\fq@w\fq@sidetcb{}}%
+  \global\let\if@nobreak\fq@savednobreak
+  \global\fq@H=\dimexpr\ht\fq@sbox+\dp\fq@sbox\relax
+  \ifdim\fq@H<1.6\fq@w
+    \setbox\fq@sbox\hbox{\normalfont\normalsize 国}%
+    \global\fq@asc=\ht\fq@sbox
+    \global\fq@dsc=\dp\fq@sbox
+    \fq@tmpcnt=\numexpr\dimexpr\fq@H-\fq@asc-\fq@dsc-0.3\baselineskip+\baselineskip\relax-1\relax
+    \divide\fq@tmpcnt by \numexpr\dimexpr\baselineskip\relax\relax
+    \advance\fq@tmpcnt\@ne
+    \ifnum\fq@tmpcnt<\@ne\fq@tmpcnt\@ne\fi
+    \global\fq@lines=\fq@tmpcnt
+    \global\fq@Hgrid=\dimexpr\fq@asc+\baselineskip*(\fq@lines-1)+\fq@dsc\relax
+    \global\fq@bottom=6mm
+    \ifdim\fq@H>\fq@Hgrid
+      \global\advance\fq@bottom by -\dimexpr\fq@H-\fq@Hgrid\relax
+    \fi
+    \fq@decide
+  \fi
+}{ }
+\AfterEndEnvironment{fullquote}{\fullquote@after}
+\let\bookwrapclear\fullquotewrapclear
+\makeatother
 
 % 表格统一处理前后呼吸，避免表尾直接撞上下一段正文。
 % 采用 minipage 而非 center，消除 center 环境自带的额外 topsep。
@@ -661,6 +931,7 @@
 
 % 让章节首面使用专门的页眉状态。
 \makeatletter
-\pretocmd{\chapter}{\thispagestyle{chapterpage}}{}{}
-\pretocmd{\section}{\Needspace{12\baselineskip}}{}{}
+\pretocmd{\chapter}{\fullquotewrapclear\thispagestyle{chapterpage}}{}{}
+\pretocmd{\section}{\fullquotewrapclear\Needspace{5\baselineskip}}{}{}
+\pretocmd{\subsection}{\fullquotewrapclear\Needspace{4\baselineskip}}{}{}
 \makeatother

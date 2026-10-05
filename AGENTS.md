@@ -8,7 +8,7 @@
 
 - `main.tex`：文档入口、封面、扉页、目录和示例章节装配。这里不放版式细节。
 - `preamble.tex`：页面尺寸、字体、颜色、标题、栏目、图像、引文、表格和公式接口的唯一来源。
-- `chapters/`：按章拆分正文；正式文件从 `main.tex` 用 `\input` 接入。
+- `chapters/`：按章拆分正文，`frontmatter/` 放前言等前置正文；正式文件从 `main.tex` 用 `\input` 接入。
 - `styles/`：网格规格、页面母版、平面计划和审美检查表。
 - `fonts/`：随稿件分发的 Noto CJK 正文字体和 Material Design Icons；许可说明在 `licenses/`，校验值在 `fonts/SHA256SUMS.txt`。
 - `.github/workflows/build.yml`：GitHub Actions 的 XeLaTeX 构建和 PDF artifact 上传。
@@ -26,8 +26,10 @@
 ## 版式接口
 
 - 样张用 `\chapter{...}`、`\section{...}`、`\subsection{...}` 展示三级标题；正式稿可以将它们映射为部分、章、节等层级。
-- `\sidequote[位置][宽度]{作者}{作品、版本、页码}{原文}` 必须从段首调用；段落结束用 `\bookwrapclear` 收束环绕状态。
-- `fullquote` 用于宽幅引文，作者、作品和版本信息放在同一条出处行。
+- `\sidequote[位置][宽度]{作者}{作品、版本、页码}{原文}` 必须从段首调用；段落结束用 `\bookwrapclear` 收束环绕状态。正文引文优先使用 `fullquote`，它根据上一遍编译记录自动选择贴外侧或宽幅排法。
+- `fullquote` 的 side 宽度为版心 40%，超过高度阈值、放不下本页、会压脚注或后文不足以环绕时转为 90% 版心的 full；作者、作品和版本信息放在同一条出处行，宽幅引文可以跨页，折角只落在最后一段。
+- 正文出处使用 `\sourcecite{完整出处}`，默认进入脚注；`\sourcecitesinline` 可切换为文中括注，`\sourceciteagain{出处}` 复用紧邻的上一个脚注号。
+- `\bookforeword` 生成前言标题、目录登记和前言页样式，正文放在 `chapters/frontmatter/foreword.tex`。
 - `\sideplaceholder`、`\sideimage` 用于侧边图像；`\fullplaceholder`、`\fullimage` 用于全宽图像。图像保持原比例，图注登记对象和来源。
 - `booktable` 统一表格上下留白；表题用 `\tablecaption{...}`。
 - 行内公式写作 `$...$`；`$$...$$` 是陈列公式原语，会独占一行。无编号陈列使用 `\[...\]` 或 `equation*`，带编号公式使用 `equation`，多行推导使用 `align`。编号按章递增，引用用 `\label` 和 `\eqref`。
@@ -46,7 +48,7 @@ tectonic -X compile --outdir build main.tex
 
 没有全局 `tectonic` 时，使用本机 LaTeX 发行版或项目提供的 `build.ps1`。正式提交前至少完成：
 
-1. 编译两遍或使用会自动重跑目录的构建器。
+1. 编译到目录、交叉引用和 `fullquote` 的 side/full 记录稳定；使用 `build.ps1` 时 XeLaTeX 最多重编十遍并在未稳定时失败。
 2. 用 Poppler 渲染封面、目录、章首页、课首页、侧边引文、宽幅引文、表格和公式页。
 3. 检查标题基线、目录引导线、折角几何、表格留白、公式编号和页码外侧定位。
 4. 用 `git diff --check` 检查空白和冲突标记。

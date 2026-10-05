@@ -22,7 +22,7 @@
 
 ## K01 栏目
 
-`readingbox` 用于阅读问题，`sourcebox` 用于材料说明，`questionbox` 用于单个待追踪问题，`noteBox` 用于制作提示。短引文用段首的 `\sidequote` 侧栏，段落结束用 `\bookwrapclear` 收束；长引文用居中的 `fullquote`，作者、作品和版本信息保持在同一条出处行。两者只放原文、作者和版本信息，不追加作者未写出的解释。表格使用 `booktable`，以固定的上下留白回到正文。
+`readingbox` 用于阅读问题，`sourcebox` 用于材料说明，`questionbox` 用于单个待追踪问题，`noteBox` 用于制作提示。直接引文统一调用 `fullquote`，由上一遍编译记录自动选择外侧窄栏或宽幅块；需要手工指定位置时使用段首的 `\sidequote`，结束后用 `\bookwrapclear` 收束。作者、作品和版本信息保持在同一条出处行，两种引文都不追加作者未写出的解释。正文出处用 `\sourcecite` 统一登记，默认进入脚注。表格使用 `booktable`，以固定的上下留白回到正文。
 
 数学行内写作 `$...$`；需要右侧编号的单行公式用 `equation`，多行公式用 `align`，编号按章递增并可用 `\eqref` 引用。数学字形固定为仓库内的 STIX Two Math。
 

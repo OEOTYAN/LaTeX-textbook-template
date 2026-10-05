@@ -2,7 +2,7 @@
 
 [![Build textbook PDF](https://github.com/OEOTYAN/LaTeX-textbook-template/actions/workflows/build.yml/badge.svg)](https://github.com/OEOTYAN/LaTeX-textbook-template/actions/workflows/build.yml)
 
-这是一个可直接编译的中文 A4 双面书籍母版。它把封面、目录、正文、材料栏、侧边图像、引文、表格和数学公式放在同一套网格里；`chapters/sample.tex` 使用章、课层级展示页面接口，这只是校样示例，正式项目可以改成部分、章、节或其他层级。
+这是一个可直接编译的中文 A4 双面书籍母版。它把封面内页、前言、目录、正文、材料栏、侧边图像、自动引文、表格和数学公式放在同一套网格里；`chapters/sample.tex` 使用章、课层级展示页面接口，这只是校样示例，正式项目可以改成部分、章、节或其他层级。
 
 ![实际编译结果：封面、目录、课页和材料页](assets/preview-spread.png)
 
@@ -22,13 +22,15 @@
 .\build.ps1 -Engine xelatex
 ```
 
-也可以直接运行 `tectonic -X compile --outdir build main.tex`。目录需要更新时，Tectonic 会自动重跑；XeLaTeX 模式由脚本运行两遍。
+也可以直接运行 `tectonic -X compile --outdir build main.tex`。目录和引文排法需要更新时，Tectonic 会自动重跑；XeLaTeX 模式由脚本重编到自动引文记录稳定为止。
 
 ## 目录结构
 
 ```text
 main.tex                       文档入口与前置页
 preamble.tex                   版式和全部可复用接口
+chapters/frontmatter/foreword.tex
+                              前言视觉校样入口
 chapters/sample.tex            视觉校样章节
 styles/                        网格、母版、平面计划、审美检查
 fonts/                         Noto CJK 正文字体与 Material Design Icons
@@ -48,6 +50,17 @@ template-preview.pdf           最近一次人工校样
 ## 栏目接口
 
 问题栏目默认使用 `head-question-outline`。按语境替换时，`preamble.tex` 提供 `\mdiChatQuestion`、`\mdiLightbulbQuestion`、`\mdiFileQuestion`、`\mdiTableQuestion`、`\mdiBeakerQuestion`、`\mdiFolderQuestion`、`\mdiCommentQuestion` 和 `\mdiMessageQuestion`。
+
+### 前言
+
+前言正文放在独立文件中，用 `\bookforeword` 生成标题、目录登记和无页眉的前言页样式：
+
+```latex
+\bookforeword
+这里接着写前言正文。
+```
+
+封面后的扉页仍由 `main.tex` 装配，书名、作者、版本和出版信息都是可替换字段。
 
 ### 小引文
 
@@ -69,7 +82,11 @@ template-preview.pdf           最近一次人工校样
 \end{fullquote}
 ```
 
-作者、作品和版本信息位于同一条出处行，折角为固定 5 mm 的纸面标记。
+`fullquote` 会先按 40% 版心量高：短引文贴在外侧，当前页放不下、会跨页或后文不足以环绕时自动改成 90% 版心的宽幅块。作者、作品和版本信息位于同一条出处行，折角为固定 5 mm 的纸面标记。XeLaTeX 构建脚本会重编到 side/full 记录稳定。
+
+### 出处
+
+正文出处统一使用 `\sourcecite{...}`。默认生成脚注；需要切换为文中括注时，在文档中调用 `\sourcecitesinline`。同一处出处紧邻重复时可用 `\sourceciteagain{...}` 复用上一个脚注号；脚注需要展开长出处时使用 `\sourcecite[完整出处]{正文短写}`。
 
 ### 图像与表格
 
@@ -104,7 +121,7 @@ template-preview.pdf           最近一次人工校样
 
 ## 校样顺序
 
-1. 编译并确认目录和交叉引用已更新。
+1. 编译并确认目录、交叉引用和自动引文排法已稳定。
 2. 渲染封面、目录、章首页、课首页、引文页、表格页和公式页。
 3. 检查标题基线、目录编号栏、引导线、折角、表格上下留白和外侧页码。
 4. 运行 `git diff --check`，确认提交中没有日志、临时图片和 `build/` 文件。

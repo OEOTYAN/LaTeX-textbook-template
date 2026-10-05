@@ -1,6 +1,11 @@
 % 编译根目录是本文件所在目录；所有资源均使用相对路径，便于本地和 Actions 复现。
 \documentclass[UTF8,zihao=-4,a4paper,twoside,openany,fontset=none]{ctexbook}
 \input{preamble.tex}
+\hypersetup{
+  pdftitle={A4 中文书籍 LaTeX 模板},
+  pdfsubject={可复用的中文书籍版式母版},
+  pdfcreator={XeLaTeX}
+}
 
 \begin{document}
 
@@ -35,7 +40,7 @@
   \vfill
 \end{titlepage}
 
-% 扉页登记编写和出版信息，正式稿按出版规范替换待定字段。
+% 封面内页（扉页）登记编写和出版信息，正式稿按出版规范替换待定字段。
 \begin{titlepage}
   \thispagestyle{empty}
   \vspace*{15mm}
@@ -63,6 +68,9 @@
     书号：待定
   \end{flushleft}
 \end{titlepage}
+
+% 前言是独立文件，标题与正文同页；正式项目替换其中的视觉校样文字。
+\input{chapters/frontmatter/foreword}
 
 % 目录宏内部负责从新页开始；这里不再额外插入测试分页。
 \bookcontents

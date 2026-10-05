@@ -27,4 +27,4 @@ Reading this as: an A4 educational book for sustained reading, with an editorial
 - Table labels never exceed body size.
 - The table of contents uses fixed label columns and one page-number column.
 - `relatedlink` styles are locally scoped and cannot leak into following paragraphs.
-- Direct quotations use the paragraph-start `sidequote` or the centered `fullquote`; `bookwrapclear` closes a short quote before the next heading, and no automatic explanatory paragraph is appended.
+- Direct quotations use `fullquote`, which selects an outer side box or a centered full block from the previous compile record; manual `sidequote` remains available for fixed placement. `bookwrapclear` closes a short quote before the next heading, and no automatic explanatory paragraph is appended.

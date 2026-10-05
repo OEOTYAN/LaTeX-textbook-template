@@ -45,14 +45,30 @@ try {
     if (-not $Tool) {
       throw '未找到 xelatex。请安装 TeX Live 或 MiKTeX。'
     }
-    & $Tool.Source '-interaction=nonstopmode' '-halt-on-error' '-file-line-error' "-output-directory=$BuildRoot" 'main.tex'
-    if ($LASTEXITCODE -ne 0) {
-      throw "XeLaTeX 第一次编译失败，退出码：$LASTEXITCODE"
+    # fullquote 的 side/full 选择依赖上一遍写入 aux 的页面和环绕记录；
+    # 反复编译到这些记录稳定，避免交付 PDF 在两种排法之间抖动。
+    $AuxPath = Join-Path $BuildRoot 'main.aux'
+    $Previous = $null
+    $Stable = $false
+    for ($Pass = 1; $Pass -le 10; $Pass++) {
+      & $Tool.Source '-interaction=nonstopmode' '-halt-on-error' '-file-line-error' "-output-directory=$BuildRoot" 'main.tex' | Out-Null
+      if ($LASTEXITCODE -ne 0) {
+        throw "XeLaTeX 第 $Pass 遍编译失败，退出码：$LASTEXITCODE"
+      }
+      $Current = ''
+      if (Test-Path -LiteralPath $AuxPath) {
+        $Current = (Select-String -LiteralPath $AuxPath -Pattern '\\fq@rec\{[0-9A-F]+\}\{(mode|lock|short)\}' | ForEach-Object { $_.Line }) -join "`n"
+      }
+      if ($Pass -ge 2 -and $Current -eq $Previous) {
+        $Stable = $true
+        break
+      }
+      $Previous = $Current
     }
-    & $Tool.Source '-interaction=nonstopmode' '-halt-on-error' '-file-line-error' "-output-directory=$BuildRoot" 'main.tex'
-    if ($LASTEXITCODE -ne 0) {
-      throw "XeLaTeX 第二次编译失败，退出码：$LASTEXITCODE"
+    if (-not $Stable) {
+      throw 'XeLaTeX 编译 10 遍后引文排法仍未稳定'
     }
+    Write-Host "XeLaTeX 编译 $Pass 遍"
   }
 }
 finally {
