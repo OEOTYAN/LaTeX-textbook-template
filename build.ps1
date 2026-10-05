@@ -1,5 +1,7 @@
 [CmdletBinding()]
 param(
+  [ValidateSet('pdf', 'html', 'epub')]
+  [string]$Format = 'pdf',
   [ValidateSet('tectonic', 'xelatex')]
   [string]$Engine = 'tectonic',
   [string]$OutputDirectory = 'build'
@@ -30,7 +32,49 @@ foreach ($Font in $RequiredFonts) {
 New-Item -ItemType Directory -Force -Path $BuildRoot | Out-Null
 Push-Location $ProjectRoot
 try {
-  if ($Engine -eq 'tectonic') {
+  if ($Format -eq 'html' -or $Format -eq 'epub') {
+    $Make4ht = Get-Command make4ht -ErrorAction SilentlyContinue
+    if (-not $Make4ht) {
+      throw '未找到 make4ht。请安装 TeX4ht，或在 GitHub Actions 中使用 texlive-plain-generic。'
+    }
+    $Python = Get-Command python -ErrorAction SilentlyContinue
+    if (-not $Python) {
+      $Python = Get-Command python3 -ErrorAction SilentlyContinue
+    }
+    if (-not $Python) {
+      throw '未找到 python。EPUB 打包需要 Python 3。'
+    }
+
+    $WebRoot = Join-Path $BuildRoot $Format
+    $WebWork = Join-Path $BuildRoot "$Format-work"
+    New-Item -ItemType Directory -Force -Path $WebRoot,$WebWork | Out-Null
+    & $Make4ht.Source '-x' '-c' 'tex4ht.cfg' '-B' $WebWork 'main.tex' 'xhtml,mathml'
+    if ($LASTEXITCODE -ne 0) {
+      throw "make4ht $Format 导出失败，退出码：$LASTEXITCODE"
+    }
+
+    Get-ChildItem -LiteralPath $WebWork -File |
+      Where-Object { $_.Extension -in '.html', '.css', '.png', '.svg', '.jpg', '.jpeg', '.gif' } |
+      Copy-Item -Destination $WebRoot -Force
+    $WebCss = Join-Path $ProjectRoot 'web.css'
+    $GeneratedCss = Join-Path $WebRoot 'main.css'
+    if ((Test-Path -LiteralPath $WebCss) -and (Test-Path -LiteralPath $GeneratedCss)) {
+      Add-Content -LiteralPath $GeneratedCss -Value (Get-Content -Raw -LiteralPath $WebCss) -Encoding utf8
+    }
+
+    if ($Format -eq 'epub') {
+      $EpubPath = Join-Path $BuildRoot 'main.epub'
+      & $Python.Source 'scripts/package_epub.py' $WebRoot $EpubPath '--title' 'A4 中文书籍 LaTeX 模板'
+      if ($LASTEXITCODE -ne 0) {
+        throw "EPUB 打包失败，退出码：$LASTEXITCODE"
+      }
+      Write-Host "EPUB 写入 $EpubPath"
+    }
+    else {
+      Write-Host "HTML 写入 $WebRoot"
+    }
+  }
+  elseif ($Engine -eq 'tectonic') {
     $Tool = Get-Command tectonic -ErrorAction SilentlyContinue
     if (-not $Tool) {
       throw '未找到 tectonic。请安装 Tectonic，或使用 -Engine xelatex。'

@@ -23,6 +23,7 @@
 .DS_Store
 Thumbs.db
 .vscode/
+__pycache__/
 
 # The repository keeps the named preview, not an accidental root build.
 /main.pdf

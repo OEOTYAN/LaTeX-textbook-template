@@ -1,4 +1,4 @@
-name: Build textbook PDF
+name: Build textbook outputs
 
 on:
   push:
@@ -33,4 +33,41 @@ jobs:
         with:
           name: textbook-template-pdf
           path: main.pdf
+          if-no-files-found: error
+
+  web:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Verify bundled font files
+        run: sha256sum --check fonts/SHA256SUMS.txt
+
+      - name: Install TeX4ht tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y texlive-xetex texlive-lang-chinese texlive-plain-generic
+          command -v make4ht
+
+      - name: Build HTML pages
+        shell: pwsh
+        run: .\build.ps1 -Format html -Engine xelatex
+
+      - name: Build EPUB 3
+        shell: pwsh
+        run: .\build.ps1 -Format epub -Engine xelatex
+
+      - name: Upload HTML pages
+        uses: actions/upload-artifact@v4
+        with:
+          name: textbook-template-html
+          path: build/html
+          if-no-files-found: error
+
+      - name: Upload EPUB
+        uses: actions/upload-artifact@v4
+        with:
+          name: textbook-template-epub
+          path: build/main.epub
           if-no-files-found: error

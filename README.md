@@ -14,6 +14,8 @@
 
 ```powershell
 .\build.ps1
+.\build.ps1 -Format html -Engine xelatex
+.\build.ps1 -Format epub -Engine xelatex
 ```
 
 脚本默认调用本机 `tectonic`，输出写入 `build/`。已有 TeX Live 时可以执行：
@@ -22,7 +24,7 @@
 .\build.ps1 -Engine xelatex
 ```
 
-也可以直接运行 `tectonic -X compile --outdir build main.tex`。目录和引文排法需要更新时，Tectonic 会自动重跑；XeLaTeX 模式由脚本重编到自动引文记录稳定为止。
+也可以直接运行 `tectonic -X compile --outdir build main.tex`。目录和引文排法需要更新时，Tectonic 会自动重跑；XeLaTeX 模式由脚本重编到自动引文记录稳定为止。HTML 和 EPUB 使用 TeX4ht 的流式语义输出：每个 `section`（模板中的课/节）进入独立 XHTML 页面，目录跨页链接跳转，网页不按 A4 硬分页。
 
 ## 目录结构
 
@@ -31,6 +33,9 @@ main.tex                       文档入口与前置页
 preamble.tex                   版式和全部可复用接口
 chapters/frontmatter/foreword.tex
                               前言视觉校样入口
+scripts/package_epub.py       将节页 XHTML 打包为 EPUB 3
+tex4ht.cfg                    HTML/EPUB 按 section 拆页配置
+web.css                       HTML/EPUB 的流式阅读样式
 chapters/sample.tex            视觉校样章节
 styles/                        网格、母版、平面计划、审美检查
 fonts/                         Noto CJK 正文字体与 Material Design Icons
@@ -117,7 +122,9 @@ template-preview.pdf           最近一次人工校样
 
 ## 自动构建
 
-`.github/workflows/build.yml` 在 `main` 的 push、Pull Request 和手动触发时运行固定版本的 XeLaTeX，先校验随稿字体，再上传 `main.pdf` artifact。工作流使用完整 TeX Live 2025 环境，仓库内的全部字体资源随源码一起加载。
+`.github/workflows/build.yml` 在 `main` 的 push、Pull Request 和手动触发时运行固定版本的 XeLaTeX，先校验随稿字体，再上传 PDF、HTML 和 EPUB artifact。HTML/EPUB 作业使用 TeX4ht 和按节拆页配置，电子书由 `scripts/package_epub.py` 组装为 EPUB 3。
+
+本地输出位置：`build/html/main.html` 是目录页，`mainse1.html`、`mainse2.html` 等是独立节页；`build/main.epub` 是对应的 EPUB 3 文件。
 
 ## 校样顺序
 

@@ -11,7 +11,9 @@
 - `chapters/`：按章拆分正文，`frontmatter/` 放前言等前置正文；正式文件从 `main.tex` 用 `\input` 接入。
 - `styles/`：网格规格、页面母版、平面计划和审美检查表。
 - `fonts/`：随稿件分发的 Noto CJK 正文字体和 Material Design Icons；许可说明在 `licenses/`，校验值在 `fonts/SHA256SUMS.txt`。
-- `.github/workflows/build.yml`：GitHub Actions 的 XeLaTeX 构建和 PDF artifact 上传。
+- `.github/workflows/build.yml`：GitHub Actions 的 PDF、HTML 和 EPUB 构建与 artifact 上传。
+- `scripts/package_epub.py`：把按节拆分的 XHTML 页面打包成 EPUB 3；`tex4ht.cfg` 控制 HTML/EPUB 的节页切分。
+- `web.css`：HTML/EPUB 的流式阅读样式，不参与 PDF 页面版式。
 - `template-preview.pdf`：最近一次人工校样的可视预览，可以提交；编译中间文件不能提交。
 - `assets/preview-spread.png` 和 `assets/preview-material-page.png`：从最近一次 PDF 直接渲染的 README 展示图，更新预览时同步替换。
 
@@ -46,7 +48,7 @@
 tectonic -X compile --outdir build main.tex
 ```
 
-没有全局 `tectonic` 时，使用本机 LaTeX 发行版或项目提供的 `build.ps1`。正式提交前至少完成：
+没有全局 `tectonic` 时，使用本机 LaTeX 发行版或项目提供的 `build.ps1`。`-Format html` 和 `-Format epub` 使用 TeX4ht，把每个 `section` 输出为独立 XHTML 页面；网页不按 PDF 的 A4 页硬分页，引文块跟随所在节。正式提交前至少完成：
 
 1. 编译到目录、交叉引用和 `fullquote` 的 side/full 记录稳定；使用 `build.ps1` 时 XeLaTeX 最多重编十遍并在未稳定时失败。
 2. 用 Poppler 渲染封面、目录、章首页、课首页、侧边引文、宽幅引文、表格和公式页。

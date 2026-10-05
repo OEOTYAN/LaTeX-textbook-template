@@ -1,0 +1,185 @@
+% TeX4ht/TeX4ebook 导言区：保留章节语义和内容接口，跳过 PDF 专用定位图形。
+\usepackage{amsmath,mathtools}
+\usepackage{fontspec}
+\usepackage{graphicx}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{setspace}
+\usepackage{xparse}
+\usepackage{etoolbox}
+\usepackage{hyperref}
+\usepackage{bookmark}
+\setmainfont[
+  Path=fonts/,
+  Extension=.otf,
+  UprightFont=NotoSerifSC-Regular,
+  BoldFont=NotoSerifSC-Bold,
+  ItalicFont=NotoSerifSC-Regular,
+  BoldItalicFont=NotoSerifSC-Bold
+]{NotoSerifSC-Regular}
+\ExplSyntaxOn
+\tl_new:N \l_bookweb_table_tl
+\cs_new_protected:Npn \bookweb_table:n #1
+  {
+    \tl_set:Nx \l_bookweb_table_tl { \tl_to_str:n {#1} }
+    \regex_replace_all:nnN { \\toprule | \\midrule | \\bottomrule | \\hline | \\bfseries | \\raggedright | \\arraybackslash } {} \l_bookweb_table_tl
+    \regex_replace_all:nnN { \\textbf \s* \{ ([^{}]*) \} } { \1 } \l_bookweb_table_tl
+    \regex_replace_all:nnN { \\\\ } { </td></tr><tr><td> } \l_bookweb_table_tl
+    \regex_replace_all:nnN { & } { </td><td> } \l_bookweb_table_tl
+    \exp_args:NV \HCode \l_bookweb_table_tl
+  }
+\NewDocumentCommand{\bookwebtable}{m}{\bookweb_table:n {#1}}
+\ExplSyntaxOff
+
+\definecolor{bookblue}{HTML}{1F78B4}
+\definecolor{bookcyan}{HTML}{54C7D2}
+\definecolor{bookink}{HTML}{262626}
+\definecolor{bookgray}{HTML}{68727A}
+\definecolor{bookline}{HTML}{C9D3D9}
+\definecolor{booklightblue}{HTML}{EAF5FB}
+\definecolor{booklightgreen}{HTML}{E9F3E4}
+\definecolor{booklightyellow}{HTML}{FFF4C9}
+\definecolor{booklightviolet}{HTML}{EEE8F6}
+\definecolor{bookorange}{HTML}{E38A24}
+\definecolor{bookgreen}{HTML}{5D9C74}
+\definecolor{bookviolet}{HTML}{8064A2}
+
+\setstretch{1.20}
+\setlength{\parindent}{2em}
+\setlength{\parskip}{0pt}
+\setlength{\emergencystretch}{2em}
+\setlist{nosep,leftmargin=2.2em}
+\setlist[itemize]{label=\textcolor{bookblue}{\small\ensuremath{\diamond}}}
+\numberwithin{equation}{chapter}
+\renewcommand{\theequation}{\thechapter.\arabic{equation}}
+
+\hypersetup{
+  unicode=true,
+  colorlinks=true,
+  linkcolor=bookblue,
+  urlcolor=bookblue,
+  citecolor=bookviolet,
+  pdftitle={A4 中文书籍 LaTeX 模板},
+  pdfauthor={}
+}
+\urlstyle{same}
+
+\newif\ifbooksourceinline
+\newcommand{\sourcecitesinline}{\booksourceinlinetrue}
+\newcommand{\sourcecitesasfootnotes}{\booksourceinlinefalse}
+\sourcecitesasfootnotes
+\newcounter{booklastsourcefootnote}
+\NewDocumentCommand{\sourcecite}{o m}{%
+  \ifbooksourceinline
+    （#2）%
+  \else
+    \IfValueTF{#1}{\footnote{#1}}{\footnote{#2}}%
+    \setcounter{booklastsourcefootnote}{\value{footnote}}%
+  \fi
+}
+\NewDocumentCommand{\sourceciteagain}{m}{%
+  \ifbooksourceinline
+    （#1）%
+  \else
+    \footnotemark[\value{booklastsourcefootnote}]%
+  \fi
+}
+
+% 图标在 HTML/EPUB 中退化为空标记，正文文字和栏目标题仍完整保留。
+\newcommand{\mdiBook}{}
+\newcommand{\mdiDocument}{}
+\newcommand{\mdiQuestion}{}
+\newcommand{\mdiHeadQuestion}{}
+\newcommand{\mdiChatQuestion}{}
+\newcommand{\mdiLightbulbQuestion}{}
+\newcommand{\mdiFileQuestion}{}
+\newcommand{\mdiTableQuestion}{}
+\newcommand{\mdiBeakerQuestion}{}
+\newcommand{\mdiFolderQuestion}{}
+\newcommand{\mdiCommentQuestion}{}
+\newcommand{\mdiMessageQuestion}{}
+\newcommand{\mdiInfo}{}
+\newcommand{\mdiQuote}{}
+\newcommand{\mdiLink}{}
+\newcommand{\mdiImage}{}
+\newcommand{\mdiTable}{}
+\newcommand{\mdiKey}{}
+\newcommand{\mdiSearch}{}
+\newcommand{\mdiCompass}{}
+\newcommand{\mdiTimeline}{}
+\newcommand{\mdiBookmark}{}
+\newcommand{\mdiScale}{}
+\newcommand{\mdiAtom}{}
+\newcommand{\mdiBrain}{}
+\newcommand{\mdiMap}{}
+\newcommand{\mdiTarget}{}
+\newcommand{\mdiClipboard}{}
+
+\newcommand{\bookwrapclear}{\par}
+\newcommand{\quotefoldsize}{0pt}
+\NewDocumentCommand{\sidequote}{O{r} O{0.24\linewidth} m m m}{%
+  \par\medskip\noindent
+  \textbf{#3}\par\small #4\par\emph{#5}\par\medskip
+}
+\NewDocumentEnvironment{quotenote}{O{r} O{0.24\linewidth} m m}{%
+  \par\medskip\noindent\textbf{#3}\par\small #4\par\begingroup\itshape
+}{\endgroup\par\medskip}
+\NewDocumentEnvironment{fullquote}{O{} m m +b}{%
+  \par\medskip\begin{quote}
+  \textbf{#2}\par\small #3\par\emph{#4}
+}{\end{quote}\par\medskip}
+
+\NewDocumentEnvironment{readingbox}{O{阅读与思考} +b}{%
+  \par\medskip\noindent\textbf{#1}\par #2\par\medskip
+}{}
+\NewDocumentEnvironment{sourcebox}{O{原典与材料} +b}{%
+  \par\medskip\noindent\textbf{#1}\par #2\par\medskip
+}{}
+\NewDocumentEnvironment{questionbox}{O{问题} +b}{%
+  \par\medskip\noindent\textbf{#1}\par #2\par\medskip
+}{}
+\NewDocumentEnvironment{noteBox}{O{提示} +b}{%
+  \par\medskip\noindent\textbf{#1}\par #2\par\medskip
+}{}
+
+\NewDocumentEnvironment{booktable}{O{0.92\linewidth} m +b}{%
+  \par\medskip\noindent
+  \HCode{</p><table class="book-table"><tbody><tr><td>}%
+  \bookwebtable{#3}%
+  \HCode{</td></tr></tbody></table><p>}%
+  \par\medskip
+}{}
+\newcommand{\tablecaption}[1]{\par\smallskip\noindent\textbf{#1}\par\smallskip}
+\newcommand{\relatedlink}[1]{\par\medskip\noindent\textbf{相关链接}\par #1\par\medskip}
+
+\newcommand{\chapterlead}[1]{\par\medskip\noindent\textbf{#1}\par\medskip}
+\newcommand{\lessonlead}[1]{\par\medskip\noindent\textbf{#1}\par\medskip}
+\newcommand{\chapterabstract}[1]{\par\medskip\noindent #1\par\medskip}
+\newcommand{\chaptervisual}[1]{%
+  \par\medskip\begin{center}\fbox{\begin{minipage}{0.82\linewidth}\centering #1\end{minipage}}\end{center}\medskip
+}
+\newcommand{\fullplaceholder}[2][0.48\textwidth]{%
+  \par\medskip\begin{center}\fbox{\parbox[c][30mm][c]{#1}{\centering #2}}\end{center}\medskip
+}
+\newcommand{\imageplaceholder}{\fullplaceholder}
+\newcommand{\fullimage}[2][\linewidth]{\begin{center}\includegraphics[width=#1]{#2}\end{center}}
+\NewDocumentCommand{\sideplaceholder}{O{r} m m m}{%
+  \par\medskip\begin{center}\fbox{\parbox[c][#3][c]{#2}{\centering #4}}\end{center}\medskip
+}
+\NewDocumentCommand{\sideimage}{O{r} m m m}{%
+  \par\medskip\begin{center}\includegraphics[width=#2]{#3}\captionline{#4}\end{center}\medskip
+}
+\newcommand{\captionline}[1]{\par\small\noindent\textit{#1}\par}
+\newcommand{\term}[1]{\textbf{#1}}
+\newcommand{\foreignterm}[1]{\textit{#1}}
+
+\newcommand{\bookforeword}{%
+  \clearpage
+  \phantomsection
+  \addcontentsline{toc}{chapter}{前言}%
+  \chapter*{前言}
+}
+\newcommand{\bookcontents}{\clearpage\tableofcontents\clearpage}
+\newcommand{\bookchapter}[1]{\chapter{#1}}
+\newcommand{\booklesson}[1]{\section{#1}}
+\setcounter{tocdepth}{2}
